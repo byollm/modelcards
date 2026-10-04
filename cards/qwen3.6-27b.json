@@ -346,9 +346,9 @@
         "max_offered_draft_tokens": 1,
         "max_effective_draft_tokens": 1,
         "adaptive_depth": false,
-        "schedule": "Request fixed native MTP depth 1. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
-        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+        "schedule": "Request fixed native MTP depth 1. The native loader clamps HTTP depth to 1..5. The acceptance-ratio gate applies to fixed depth one and may switch to serial. Require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,
@@ -590,9 +590,9 @@
         "max_offered_draft_tokens": 3,
         "max_effective_draft_tokens": 3,
         "adaptive_depth": false,
-        "schedule": "Request fixed native MTP depth 3. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
-        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+        "schedule": "Request fixed native MTP depth 3. The native loader clamps HTTP depth to 1..5. Fixed depths above one are exempt from the acceptance-ratio gate. Unsupported-input or backend fallback remains possible. Require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,
@@ -834,9 +834,9 @@
         "max_offered_draft_tokens": 5,
         "max_effective_draft_tokens": 5,
         "adaptive_depth": false,
-        "schedule": "Request fixed native MTP depth 5. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
-        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+        "schedule": "Request fixed native MTP depth 5. The native loader clamps HTTP depth to 1..5. Fixed depths above one are exempt from the acceptance-ratio gate. Unsupported-input or backend fallback remains possible. Require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,

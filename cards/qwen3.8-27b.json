@@ -180,9 +180,10 @@
         }
       },
       "benchmark_ids": [
-        "qwen38-yukon-ranked-mtp-0863b06"
+        "qwen38-yukon-ranked-mtp-0863b06",
+        "qwen38-m4max-native-mtp-practical-v2-three-pair-speed-20261004"
       ],
-      "notes": "Candidate for local comparison. Standalone fixed-window same-build serial parity passed the attached fixture. API, private route, GUI, tools, cancellation, and API stop/output-limit checks remain not_tested. Card order does not promote it. The context and memory floor are comparison settings, not validated full-context MTP limits.",
+      "notes": "Standalone benchmark candidate. Three practical-v2 matched pairs produced a 2.568096700 median paired speed ratio with exact 512-token internal consistency in all six legs. Its charged windows include 512-seed prefill and continue beyond EOS. The official 40 °C start gate failed; this is a separate matched practical 45.5 °C policy, not a ranking result. API, private route, GUI, tools, cancellation, and API stop/output-limit checks remain not_tested. No helper profile or serving recommendation is mapped. Context and memory floor are comparison settings, not validated full-context MTP limits.",
       "amesh_profile_ids": [],
       "transform": {
         "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/Sources/MLXFastTransform/Transform.swift",
@@ -801,6 +802,68 @@
       "recipe_ids": [
         "qwen38-mlx-node-dflash2-block8-f6db56b"
       ]
+    },
+    {
+      "state": "passed",
+      "recorded_at": "2026-10-04T01:42:31.862Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "9cd78a46d694dd7c7deca901bad24515dd622c558b468ae8eaad9f34f595853f",
+      "harness_executable_sha256": "ced9a2659d7cb7ed3b1ea2280f0f1006d7cf1917363ae05ebbb249334ef30215",
+      "workload_id": "public-longcopy-practical-v2-seed512-output512",
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "recipe_ids": [
+        "qwen38-yukon-native-mtp-0863b06"
+      ],
+      "id": "qwen38-m4max-native-mtp-practical-v2-six-leg-parity-20261004",
+      "kind": "local_functional",
+      "scope": "All six measured practical-v2 standalone legs: three same-candidate serial controls and three offered-depth-eight MTP windows; exact 512 emitted token IDs and zero residuals in every leg",
+      "notes": "Each leg matched the same fresh 513-row serial reference SHA256 66858d9561663b62e58a97191428da0a3816cdb00f67a93f724c7b2d0cf2301e. Prepared seed: 512 tokens, SHA256 73e848f927879e6d8b8179cb708d8af697890fece44a3db57ba101ab6acbbc7b. Fixture SHA256 3d922b1a0ada04d9827b905c881232bf50fb697d4be9ab3ee21346f7e0b8ae9c. Each serial control checked all 512 declared rows and produced zero drafts. Each MTP leg checked all 574 declared rows, accepted 435 of 496 proposals, and realized at most seven drafts despite offered depth eight. All 20 frozen receipt/report/audit/tree hashes were independently rebound. The nine-file transformed tree remained unchanged at 15,153,230,183 bytes. This is same-candidate internal consistency. Windows continue beyond EOS. No official-target fidelity, API stopping, output-limit, tools, cancellation, GUI or private-mesh validation is claimed. Final summary SHA256 52766df6a09ee2fc1cfc4b303f94d597e578958862fc64ddaa6adc4ce9940a2d."
+    },
+    {
+      "state": "passed",
+      "recorded_at": "2026-10-04T01:42:31.862Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "9cd78a46d694dd7c7deca901bad24515dd622c558b468ae8eaad9f34f595853f",
+      "harness_executable_sha256": "ced9a2659d7cb7ed3b1ea2280f0f1006d7cf1917363ae05ebbb249334ef30215",
+      "workload_id": "public-longcopy-practical-v2-seed512-output512",
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "recipe_ids": [
+        "qwen38-yukon-native-mtp-0863b06"
+      ],
+      "id": "qwen38-m4max-native-mtp-practical-v2-three-pair-speed-20261004",
+      "kind": "local_benchmark",
+      "scope": "Standalone practical-v2 matched serial/depth-eight charged-window comparison; 512 seed tokens and 512 output tokens; no API or ranking result",
+      "measurement": {
+        "metric": "serial_relative_speedup",
+        "method": "For each matched pair, divide serial charged seconds by MTP charged seconds for the same fixed 512 output window. Parent timing includes 512-token seed prefill. Model loading, full input-independent warmup and post-window audit are excluded.",
+        "aggregation": "median of three matched per-pair speed ratios; not the ratio of median rates",
+        "measured_runs": 3,
+        "warmup_runs": 2,
+        "concurrency": 1,
+        "sampling": "exact greedy, temperature zero; fixed output ledger deliberately continues beyond EOS",
+        "cache_policy": "Fresh standalone CLI/model session for each measured leg. One excluded initial warmup per arm. Full input-independent startup warmup is excluded from each charged window. Fixed target, seed and candidate build; serial offered depth 0 versus MTP offered depth 8.",
+        "includes_reasoning": true,
+        "prompt_tokens": 512,
+        "completion_tokens": 512,
+        "value": 2.568096699868971,
+        "minimum": 2.559081384608364,
+        "maximum": 2.5707384430379063
+      },
+      "notes": "Three matched pairs on the recorded M4 Max. Paired ratios: 2.55908138461, 2.57073844304, 2.56809669987 times. Serial charged-window rates, including seed prefill: 25.5628801347, 25.4586295661, 25.4941318027 tokens/s. MTP charged-window rates on the matched legs: 65.4174906896, 65.4474777325, 65.4713957486 tokens/s. Median charged-window rates: serial 25.4941318027 and MTP 65.4474777325 tokens/s. Median paired ratio 2.56809669987 differs from ratio of median rates 2.56715852256. Every emitted ID is counted without reasoning/content filtering. All six windows passed exact 512/zero-residual internal checks. The official 40 °C starting gate failed before any measured official-contract leg. Separate practical policy: first start at most 45.5 °C, paired second within 2.0 °C and at most 45.5 °C, reanchor each pair. Serial/MTP start temperatures by pair: 42.182926/43.984150C, 45.385471/45.315338C, 45.499477/45.399673C. Thermal extrema cover the whole CLI, including load, warmup and audit; charged-window extrema are unavailable. This is not an API, steady decode, total-request or Yukon ranking measurement. It does not establish a 200-token/s serving rate. Functional six-leg evidence: qwen38-m4max-native-mtp-practical-v2-six-leg-parity-20261004. Final summary SHA256 52766df6a09ee2fc1cfc4b303f94d597e578958862fc64ddaa6adc4ce9940a2d."
     }
   ]
 }
