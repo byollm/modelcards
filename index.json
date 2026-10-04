@@ -3,7 +3,7 @@
   "schema_version": 1,
   "kind": "amesh.model-card-index",
   "authority": "display_only",
-  "generated_at": "2026-10-04T03:35:36Z",
+  "generated_at": "2026-10-04T16:08:53Z",
   "repository": "https://github.com/byollm/modelcards",
   "cards": [
     {
@@ -24,6 +24,26 @@
       },
       "amesh_profile_ids": [
         "yukon-qwen3_6-27b-mixed4bit"
+      ]
+    },
+    {
+      "id": "qwen3.8-27b-abliterated",
+      "name": "Qwen 3.8 27B Abliterated",
+      "path": "cards/qwen3.8-27b-abliterated.json",
+      "sha256": "8b5f7b4eb8362168be7d510416c929c1cfa87e72356e1a65f1d1d212b838179c",
+      "model_type": "dense",
+      "display": {
+        "type_symbol": "square.stack.3d.up",
+        "capability_symbols": {
+          "chat": "bubble.left.and.bubble.right",
+          "speculation": "bolt.fill",
+          "streaming": "waveform",
+          "thinking": "point.3.connected.trianglepath.dotted",
+          "tools": "wrench.and.screwdriver"
+        }
+      },
+      "amesh_profile_ids": [
+        "yukon-qwen3_8-27b-abliterated-mtp-4bit"
       ]
     },
     {

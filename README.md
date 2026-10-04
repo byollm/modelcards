@@ -15,6 +15,7 @@ download, install, launch, or sharing authority.
 | --- | --- |
 | [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline; failed MLX-Node MTP comparisons at depths 1, 3 and 5 |
 | [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated NativeV4/APIv5 MTP serving recipe and serial baseline; separate standalone MTP worker; failed MLX-Node DFlash2 comparison |
+| [Qwen 3.8 27B Abliterated](cards/qwen3.8-27b-abliterated.json) | Untested native MTP candidate for a third-party abliterated checkpoint; every check is `not_tested` |
 
 ## Choose the fastest validated recipe
 
@@ -74,8 +75,8 @@ Run both checks from the repository root:
 
 ```sh
 npx --yes --package ajv-cli@5.0.0 --package ajv-formats@3.0.1 ajv validate --spec=draft2020 --strict=true -s schemas/model-card.schema.json -d 'cards/*.json' -c ajv-formats --all-errors
-go run ./cmd/check-cards/main.go
-go test ./cmd/check-cards/main.go ./cmd/check-cards/main_test.go
+go run ./cmd/check-cards
+go test ./...
 ```
 
 The Go check rejects unresolved references, duplicate profile mappings, promotion
@@ -84,8 +85,59 @@ file hashes and sizes. Passed checks need local evidence for that recipe and tha
 check. A local source build cannot stand in for a serving test. Evidence declares
 its scope with `recipe_ids`, `validated_checks`, and `validated_capabilities`.
 Before publishing card changes, regenerate `index.json` with
-`go run ./cmd/check-cards/main.go -write-index`. Its hashes must describe the exact
+`go run ./cmd/check-cards -write-index`. Its hashes must describe the exact
 published card bytes.
+
+## Generate a candidate card
+
+`cmd/new-card` drafts a card from upstream metadata. It never measures anything:
+every capability and validation check is `not_tested`, the recipe role is
+`candidate`, and the card has no evidence. Review and edit the draft before
+publishing it.
+
+```sh
+# Hugging Face repository, folder or GGUF file
+go run ./cmd/new-card https://huggingface.co/PocketAiHub/Qwen3.8-27B-Abliterated-MLX/tree/1e90b68cc16d79e3f44b3ade10257f99f4b7baff/4bit
+go run ./cmd/new-card https://huggingface.co/unsloth/Qwen3-30B-A3B-GGUF/blob/main/Qwen3-30B-A3B-Q4_K_M.gguf
+
+# Amesh runtime pack, by path or HTTPS URL
+go run ./cmd/new-card yukon-native-qwen38-abliterated-mtp.template.json \
+  --head-source https://huggingface.co/amal-david/qwen38-mtp-head-q2-q4-rerank-v1
+```
+
+The generator pins the exact commit SHA and records every file directly in the
+chosen folder, or the chosen GGUF file set, with its LFS SHA-256 or the hash of
+its verified bytes. It then writes `cards/<id>.json`, adds or replaces that card's
+`index.json` entry, and runs the same checks as `check-cards`. It writes nothing
+if any check fails, and refuses to overwrite a card without `--force`.
+
+| Format | Default backend | Notes |
+| --- | --- | --- |
+| MLX (`quantization` in `config.json`, or an MLX library tag) | `mlx-lm` | Quantization from bits, group size and mode |
+| GGUF | `llama.cpp` | Quantization from the file name; a folder with several models needs a `/blob/` URL |
+| Other safetensors | `vllm` (`--backend transformers`) | Flagged as not a Mac recipe |
+
+Without profiles, a recipe is an unlinked `comparison_only` candidate.
+`--profile-id` (repeatable) maps exact helper profiles and makes it
+`local_validation_only`. A runtime pack adds its own `profile.profile_id`,
+context and memory minimum, and derives native MTP from `--mtp-head` and
+`--mtp-max-depth`. A pack that pins its head only as a local file needs
+`--head-source` naming the Hugging Face location of a file with that SHA-256. A
+pack is display data: the generator does not verify its signature, and links it
+as `launch.runtime_pack` only when it carries one.
+
+Derived values are labeled in the recipe notes. Context is the advertised
+`max_position_embeddings` or GGUF `context_length`, not a tested limit. The
+memory floor is weight bytes × 1.2, rounded up to the next unified-memory tier
+(8, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384 or 512 GiB). Sampling follows
+`generation_config.json`, or greedy temperature 0 when that file is absent.
+Yukon pack recipes follow the engine contract instead: greedy, temperature 0,
+unsupported settings rejected; upstream generation defaults go in the notes.
+Mixture-of-experts cards use the `circle.hexagongrid` type symbol. The engine
+`source_revision` is the engine's current default-branch commit unless
+`--engine-revision` names one. Other flags: `--id`, `--name`, `--root`,
+`--timeout`, and a repeatable `--note` appended to the recipe notes. Requests use HTTPS only, with bounded timeouts and sizes. An
+optional `HF_TOKEN` is sent only to Hugging Face and never logged.
 
 `amesh_profile_ids` maps a recipe to exact helper profiles. An empty list means no
 helper profile has been linked. Display symbols use SF Symbols names; other

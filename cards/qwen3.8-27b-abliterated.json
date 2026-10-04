@@ -1,0 +1,271 @@
+{
+  "$schema": "../schemas/model-card.schema.json",
+  "schema_version": 1,
+  "kind": "amesh.model-card",
+  "id": "qwen3.8-27b-abliterated",
+  "name": "Qwen 3.8 27B Abliterated",
+  "model_type": "dense",
+  "display": {
+    "type_symbol": "square.stack.3d.up",
+    "capability_symbols": {
+      "chat": "bubble.left.and.bubble.right",
+      "speculation": "bolt.fill",
+      "streaming": "waveform",
+      "thinking": "point.3.connected.trianglepath.dotted",
+      "tools": "wrench.and.screwdriver"
+    }
+  },
+  "selection": {
+    "policy": "fastest_validated",
+    "metric": "request_tokens_per_second",
+    "required_checks": [
+      "local_output_fidelity",
+      "openai_api",
+      "streaming",
+      "usage",
+      "output_limit",
+      "stream_cancel_recovery",
+      "typed_tool_continuation",
+      "gui_launch",
+      "private_mesh"
+    ],
+    "comparable_fields": [
+      "target.repository",
+      "target.revision",
+      "hardware",
+      "context_tokens",
+      "sampling",
+      "concurrency",
+      "workload_id",
+      "measurement.method",
+      "measurement.cache_policy",
+      "measurement.includes_reasoning"
+    ],
+    "fallback_policy": "visible_reason_required"
+  },
+  "recipes": [
+    {
+      "id": "qwen3.8-27b-abliterated-mlx-swift-native-mtp-api-1e90b68",
+      "role": "candidate",
+      "target": {
+        "repository": "PocketAiHub/Qwen3.8-27B-Abliterated-MLX",
+        "revision": "1e90b68cc16d79e3f44b3ade10257f99f4b7baff",
+        "quantization": "MLX affine 4-bit, group size 64",
+        "files": [
+          {
+            "path": "4bit/abliteration-manifest.json",
+            "sha256": "a6e35878e969a319d49570ec266d93762870fefb2737fc2dc4815a2e3380875e",
+            "bytes": 1367
+          },
+          {
+            "path": "4bit/artifact-manifest.json",
+            "sha256": "6d31b471fd059bacb2a7d972869c60db2d6070b443757373ca508c99ba7b8822",
+            "bytes": 3955
+          },
+          {
+            "path": "4bit/chat_template.jinja",
+            "sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+            "bytes": 8952
+          },
+          {
+            "path": "4bit/config.json",
+            "sha256": "14b65a0ee06517060a6bbd979bb1a8ff54e7b304b1a1f01d54344b88b8285e85",
+            "bytes": 4932
+          },
+          {
+            "path": "4bit/generation_config.json",
+            "sha256": "e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e",
+            "bytes": 202
+          },
+          {
+            "path": "4bit/model-00001-of-00003.safetensors",
+            "sha256": "6cc1508e96fb5d0865dfd5753a79f4ec60651bf3e2a82844a7e8ae9c60528c0d",
+            "bytes": 5343268662
+          },
+          {
+            "path": "4bit/model-00002-of-00003.safetensors",
+            "sha256": "50d4ee94ae838f11879bd0ea3ab79b2cdb1e418ef7cf7084364a79141a6b915a",
+            "bytes": 5354185130
+          },
+          {
+            "path": "4bit/model-00003-of-00003.safetensors",
+            "sha256": "dff9cfb16b31829da2f2e4d5fa689ec5a0e8800c064ded5e6d4d37288c59fa00",
+            "bytes": 5357087557
+          },
+          {
+            "path": "4bit/model.safetensors.index.json",
+            "sha256": "13b840162b4cb35c66fef7df072f7dbb4717908204364f5e5d9f9655a2758fa8",
+            "bytes": 218281
+          },
+          {
+            "path": "4bit/preprocessor_config.json",
+            "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+            "bytes": 390
+          },
+          {
+            "path": "4bit/processor_config.json",
+            "sha256": "45fc17c8dd2474af6b493b52483c26c0584b0082d368c480f9fa611e73070040",
+            "bytes": 991
+          },
+          {
+            "path": "4bit/tokenizer.json",
+            "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+            "bytes": 19989325
+          },
+          {
+            "path": "4bit/tokenizer_config.json",
+            "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+            "bytes": 1165
+          },
+          {
+            "path": "4bit/validation-summary.json",
+            "sha256": "c017dd6dea2af7f78b552528198dfdeafc1ab415d5206a46a5d662266f9435f9",
+            "bytes": 3020
+          },
+          {
+            "path": "4bit/video_preprocessor_config.json",
+            "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+            "bytes": 385
+          },
+          {
+            "path": "4bit/vocab.json",
+            "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+            "bytes": 6722759
+          }
+        ],
+        "notes": "Target inventory is every file directly under 4bit/ at the pinned revision."
+      },
+      "engine": {
+        "backend": "mlx-swift-native-mtp-api",
+        "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge",
+        "source_revision": "0863b06ac16e26e48fc06e97444095b00feb66d4",
+        "product": "amesh-yukon-native",
+        "notes": "source_revision is the default-branch commit on 2026-10-04. No build of this engine has been tested with this recipe. The pack executable amesh-yukon-server has SHA-256 ee0f520a5a7a00dab6b307ce9d660f3348d2a904c6d2d86d2908291167d02853; the pack does not say whether it is the native binary or a launcher, so no engine hash field is set."
+      },
+      "speculation": {
+        "method": "native_mtp",
+        "head": {
+          "repository": "amal-david/qwen38-mtp-head-q2-q4-rerank-v1",
+          "revision": "ae6282749a52e052496dd5300b4aa441df7301e8",
+          "quantization": "not declared in the upstream head config",
+          "files": [
+            {
+              "path": "model.safetensors",
+              "sha256": "d038fd41e2d5dab1b3905c115d859fdc98dfbfde9862c14ebb82c2b3247ec2f1",
+              "bytes": 427742600
+            }
+          ],
+          "tree_digest": {
+            "sha256": "559b24ebca354018e4402fdb1f5af1afe5a0721bd2ebf04133500d846f7d5f71",
+            "algorithm": "sha256_of_sorted_file_sha256_two_spaces_relative_path_lf",
+            "inventory": [
+              "model.safetensors"
+            ]
+          },
+          "notes": "The tree digest covers only the listed head files, not the whole repository. No local head load is implied."
+        },
+        "max_offered_draft_tokens": 8,
+        "schedule": "The runtime pack passes --mtp-max-depth 8. Realized draft depth is not recorded.",
+        "schedule_source": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge"
+      },
+      "context_tokens": 65536,
+      "min_unified_memory_gib": 32,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "reject"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "not_tested",
+          "evidence_ids": [],
+          "notes": "Upstream chat template present."
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "thinking": {
+          "state": "not_tested",
+          "evidence_ids": [],
+          "notes": "Upstream template or tags reference reasoning output."
+        },
+        "tools": {
+          "state": "not_tested",
+          "evidence_ids": [],
+          "notes": "Upstream template or tags reference tool calls."
+        }
+      },
+      "validation": {
+        "gui_launch": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "local_output_fidelity": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "openai_api": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "output_limit": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "private_mesh": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "same_workload_speedup": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "stream_cancel_recovery": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "typed_tool_continuation": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "usage": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "launch": {
+        "availability": "local_validation_only",
+        "protocol": "openai_chat_completions",
+        "argv": [
+          "amesh-yukon-server",
+          "--model",
+          "{target_directory}",
+          "--host",
+          "{host}",
+          "--port",
+          "{port}",
+          "--model-id",
+          "{model_id}",
+          "--context-tokens",
+          "{context_tokens}",
+          "--mtp-head",
+          "{head_file}",
+          "--mtp-max-depth",
+          "8"
+        ]
+      },
+      "benchmark_ids": [],
+      "notes": "Generated by cmd/new-card on 2026-10-04 from runtime pack yukon-native-qwen38-abliterated-mtp-20261004 revision 1. Candidate only: every capability and validation check is not_tested and no evidence is attached. The pack is display data only: this generator did not verify its signature, expiry, platforms or pins. The source pack is unsigned, so no runtime_pack is linked. context_tokens is the pack profile setting, not a tested serving limit. min_unified_memory_gib is the pack profile minimum. Sampling follows the amesh-yukon-native engine contract: greedy with explicit temperature 0; omitted or stochastic temperature is rejected. Upstream generation_config.json sets do_sample=true, temperature=1, top_p=0.95, top_k=20; these are upstream defaults only. Upstream license: apache-2.0. Upstream base model: Qwen/Qwen3.8-27B. Upstream pipeline tag: image-text-to-text. This third-party checkpoint has its refusal behavior removed (abliterated); it is not the upstream Qwen release.",
+      "amesh_profile_ids": [
+        "yukon-qwen3_8-27b-abliterated-mtp-4bit"
+      ]
+    }
+  ],
+  "evidence": []
+}
