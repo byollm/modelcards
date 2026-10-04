@@ -204,6 +204,42 @@ func verifyArtifact(recipeID, name string, a *artifact) error {
 	return nil
 }
 
+func verifyPromptTokenCounts(raw json.RawMessage) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &fields); err != nil {
+		return err
+	}
+	for key := range fields {
+		switch key {
+		case "metric", "method", "aggregation", "measured_runs", "warmup_runs", "concurrency", "sampling", "cache_policy", "includes_reasoning", "prompt_tokens", "prompt_token_counts", "completion_tokens", "value", "minimum", "maximum", "first_token_seconds", "first_visible_content_seconds":
+		default:
+			return fmt.Errorf("prompt token counts measurement has an unknown or noncanonical field: %s", key)
+		}
+	}
+	if _, present := fields["prompt_token_counts"]; !present {
+		return nil
+	}
+	if _, present := fields["prompt_tokens"]; present {
+		return fmt.Errorf("prompt token counts cannot combine scalar and series")
+	}
+	var m struct {
+		Counts []int `json:"prompt_token_counts"`
+		Runs   int   `json:"measured_runs"`
+	}
+	if err := json.Unmarshal(raw, &m); err != nil {
+		return fmt.Errorf("prompt token counts: %w", err)
+	}
+	if len(m.Counts) < 1 || len(m.Counts) > 128 || len(m.Counts) != m.Runs {
+		return fmt.Errorf("prompt token counts must contain one value per measured run, excluding warmups, within 128 runs")
+	}
+	for _, count := range m.Counts {
+		if count < 1 || count > 1048576 {
+			return fmt.Errorf("prompt token counts must be positive and at most 1048576")
+		}
+	}
+	return nil
+}
+
 func verify(c card, profiles map[string]string) error {
 	recipeIDs := make(map[string]bool)
 	for _, r := range c.Recipes {
@@ -219,6 +255,11 @@ func verify(c card, profiles map[string]string) error {
 		}
 		if e.Kind == "local_benchmark" && (len(e.Hardware) == 0 || len(e.Measurement) == 0) {
 			return fmt.Errorf("local benchmark %q needs hardware and measurement", e.ID)
+		}
+		if len(e.Measurement) != 0 {
+			if err := verifyPromptTokenCounts(e.Measurement); err != nil {
+				return fmt.Errorf("evidence %q: %w", e.ID, err)
+			}
 		}
 		if e.State == "passed" && e.Correctness != nil {
 			c := e.Correctness

@@ -13,8 +13,8 @@ download, install, launch, or sharing authority.
 
 | Card | Recipes |
 | --- | --- |
-| [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline; MLX-Node MTP comparison at depths 1, 3 and 5 |
-| [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated serial API baseline; Yukon native-MTP worker; MLX-Node DFlash2 comparison |
+| [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline; failed MLX-Node MTP comparisons at depths 1, 3 and 5 |
+| [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated NativeV4/APIv5 MTP serving recipe and serial baseline; separate standalone MTP worker; failed MLX-Node DFlash2 comparison |
 
 ## Choose the fastest validated recipe
 
@@ -64,6 +64,11 @@ display feed.
 IDs within a card must be unique. Every evidence and recipe reference must resolve
 within that card. Consumers must apply the selection rules above in addition to
 structural schema validation.
+
+`measurement.prompt_token_counts` records ordered input-token counts for measured
+requests. Its length must equal `measured_runs`; warmups are excluded. Use this
+series or the fixed `prompt_tokens` scalar, never both. Recipe comparisons require
+the same ordered series. Measurement field names use exact lowercase spelling.
 
 Run both checks from the repository root:
 
@@ -123,13 +128,13 @@ in the interface. An artifact's advertised context is not a tested serving limit
 
 ## Current evidence
 
-The serial results were measured on an M4 Max with 40 GPU cores and 128 GiB of
+The earlier serial short and long results were measured on an M4 Max with 40 GPU cores and 128 GiB of
 unified memory, running macOS 15.4.1. They use one request at a time, temperature
 zero, a fresh per-request cache, and a 128-token output cap. The short and long
 default cases emit reasoning within that cap. They do not establish answer quality
 or a sustained long-context speed.
 
-The Qwen 3.8 MTP candidate is pinned to the winning Yukon source and head. Its
+The separate Qwen 3.8 standalone MTP candidate is pinned to the winning Yukon source and head. Its
 upstream benchmark passed exact-greedy parity on the ranked prompt set. Local
 standalone validation matched a fresh same-build serial reference for one fixed
 512-token window and reconstructed every declared row with zero residuals. That
@@ -143,13 +148,43 @@ input-independent warmup are excluded. The official speedup compares the origina
 pinned serial baseline worker with the winning candidate. It is not a pure
 steady-state decode rate or a same-current-candidate serial comparison.
 
+The GUI serving recipe `qwen38-yukon-native-mtp-api-v5` pairs NativeV4 with the
+APIv5 Go launcher and signed pack revision 4. On the same M4 Max, its measured
+code and prose medians were 61.82 and 51.97 request tokens/s. The retained serial
+baseline measured 26.51 and 26.87. Each workload has three measured requests and
+one excluded warmup, with 128 reported output tokens per request. Ordered input
+counts are `[71,68,69]` for code and `[61,58,64]` for prose.
+
+These rates include prompt processing in full client request time. They exclude
+model loading because the worker is resident. Thinking is explicitly disabled.
+The serial baseline was not rerun as fresh interleaved thermal pairs. Cache misses
+are not independently proven. These results do not establish a decode rate or
+predict every future prompt.
+
+The API passed 21 completed self-checks and matched 18 commonly accepted serial
+responses exactly. The global paired suite remains **FAIL**: serial rejects three
+stop requests that MTP supports. Cancellation proves only a client abort before
+response headers and recovery on the same chain. Native admission, prefill-stage
+cancellation and nonstream disconnect handling remain unproven.
+
+Actual web GUI Start and Confirm launched the exact profile. This launch check
+does not qualify GUI client sampling or default-temperature behavior. A two-turn FloCode
+session used the canonical private route, completed a typed read with numeric
+arguments, and answered correctly. Explicit `--temperature 0` is required.
+Repetition penalty must be omitted or 1; presence and frequency penalties must be
+omitted or 0. The configured 65,536-token context and 32 GiB memory floor are not
+full-context performance or fidelity tests.
+
 The MLX-Node candidates pin unchanged source and exact staged head or drafter
 files. Qwen 3.6 requests fixed native-MTP depths 1, 3 and 5. Qwen 3.8 DFlash2 uses
 one anchor plus seven proposals. These use the upstream `/v1/responses` endpoint,
-not an Amesh Chat Completions adapter. The local build, help and import checks
-passed without loading a model. Remote execution, output parity, speed, tools,
-cancellation, GUI launch and private sharing remain untested. No performance value
-or launch recommendation comes from that build check.
+not an Amesh Chat Completions adapter. Remote trials completed with active native
+speculation, but exact serial-output fidelity failed for all four configurations.
+Qwen 3.6 passed 13 of 24 pairs across the three depths; every depth failed at least
+one code or prose pair. Qwen 3.8 DFlash2 passed four of eight pairs and failed both
+code and both prose pairs. These candidates have no eligible helper profile, rate
+claim or launch recommendation. Tools, cancellation, GUI launch and private
+sharing remain unqualified for them.
 
 Repository data and documentation use [Apache-2.0](LICENSE). Each model, head,
 drafter, and engine keeps its own license. This repository's license does not

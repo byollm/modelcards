@@ -155,3 +155,105 @@ func TestUnqualifiedRecipesCannotBorrowEvidenceOrLaunchAuthority(t *testing.T) {
 		})
 	}
 }
+
+func TestMeasuredPromptCountsRejectMalformedAggregateScope(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		mutate func(map[string]any)
+	}{
+		{"wrong-length", func(m map[string]any) { m["prompt_token_counts"] = []int{71, 68} }},
+		{"zero", func(m map[string]any) { m["prompt_token_counts"] = []int{71, 0, 69} }},
+		{"negative", func(m map[string]any) { m["prompt_token_counts"] = []int{71, -1, 69} }},
+		{"oversized", func(m map[string]any) { m["prompt_token_counts"] = []int{71, 1048577, 69} }},
+		{"mixed-scalar", func(m map[string]any) { m["prompt_tokens"] = 71 }},
+		{"mixed-zero-scalar", func(m map[string]any) { m["prompt_tokens"] = 0 }},
+		{"null", func(m map[string]any) { m["prompt_token_counts"] = nil }},
+		{"empty", func(m map[string]any) { m["prompt_token_counts"] = []int{} }},
+		{"too-many-runs", func(m map[string]any) {
+			counts := make([]int, 129)
+			for n := range counts {
+				counts[n] = 71
+			}
+			m["prompt_token_counts"], m["measured_runs"] = counts, 129
+		}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			c := publishedCard(t, "qwen3.6-27b.json")
+			var m map[string]any
+			if err := json.Unmarshal(c.Evidence[1].Measurement, &m); err != nil {
+				t.Fatal(err)
+			}
+			delete(m, "prompt_tokens")
+			m["prompt_token_counts"], m["measured_runs"] = []int{71, 68, 69}, 3
+			test.mutate(m)
+			data, err := json.Marshal(m)
+			if err != nil {
+				t.Fatal(err)
+			}
+			c.Evidence[1].Measurement = data
+			if err := verify(c, make(map[string]string)); err == nil || !strings.Contains(err.Error(), "prompt token counts") {
+				t.Fatalf("malformed aggregate prompt token counts were accepted: %v", err)
+			}
+		})
+	}
+}
+
+func TestMeasuredPromptCountsPreserveValidAggregateAndLegacyScalar(t *testing.T) {
+	c := publishedCard(t, "qwen3.6-27b.json")
+	if err := verify(c, make(map[string]string)); err != nil {
+		t.Fatalf("legacy scalar stopped validating: %v", err)
+	}
+	var m map[string]any
+	if err := json.Unmarshal(c.Evidence[1].Measurement, &m); err != nil {
+		t.Fatal(err)
+	}
+	delete(m, "prompt_tokens")
+	m["prompt_token_counts"], m["measured_runs"] = []int{71, 68, 69}, 3
+	data, err := json.Marshal(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.Evidence[1].Measurement = data
+	if err := verify(c, make(map[string]string)); err != nil {
+		t.Fatalf("valid ordered aggregate was rejected: %v", err)
+	}
+}
+
+func TestMeasuredPromptCountsRejectNoncanonicalMeasurementKeys(t *testing.T) {
+	for _, test := range []struct {
+		name, canonical, alias, value string
+		series                        bool
+		removeCanonical               bool
+	}{
+		{"series-uppercase-only", "prompt_token_counts", "PROMPT_TOKEN_COUNTS", "[71,68,69]", true, true},
+		{"series-last-write-alias", "prompt_token_counts", "PROMPT_TOKEN_COUNTS", "[71,68,70]", true, false},
+		{"series-mixed-uppercase-scalar", "prompt_tokens", "PROMPT_TOKENS", "107", true, false},
+		{"series-uppercase-runs", "measured_runs", "MEASURED_RUNS", "3", true, true},
+		{"legacy-uppercase-scalar", "prompt_tokens", "PROMPT_TOKENS", "107", false, true},
+		{"legacy-uppercase-runs", "measured_runs", "MEASURED_RUNS", "3", false, true},
+		{"legacy-uppercase-metric", "metric", "METRIC", `"decode_tokens_per_second"`, false, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			c := publishedCard(t, "qwen3.6-27b.json")
+			var m map[string]any
+			if err := json.Unmarshal(c.Evidence[1].Measurement, &m); err != nil {
+				t.Fatal(err)
+			}
+			if test.series {
+				delete(m, "prompt_tokens")
+				m["prompt_token_counts"], m["measured_runs"] = []int{71, 68, 69}, 3
+			}
+			if test.removeCanonical {
+				delete(m, test.canonical)
+			}
+			raw, err := json.Marshal(m)
+			if err != nil {
+				t.Fatal(err)
+			}
+			c.Evidence[1].Measurement = json.RawMessage(string(raw[:len(raw)-1]) + `,"` + test.alias + `":` + test.value + `}`)
+			if err := verify(c, make(map[string]string)); err == nil || !strings.Contains(err.Error(), "prompt token counts") {
+				t.Fatalf("noncanonical measurement key was accepted: %v", err)
+			}
+		})
+	}
+}

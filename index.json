@@ -3,14 +3,14 @@
   "schema_version": 1,
   "kind": "amesh.model-card-index",
   "authority": "display_only",
-  "generated_at": "2026-10-04T01:50:59Z",
+  "generated_at": "2026-10-04T03:35:36Z",
   "repository": "https://github.com/byollm/modelcards",
   "cards": [
     {
       "id": "qwen3.6-27b",
       "name": "Qwen 3.6 27B",
       "path": "cards/qwen3.6-27b.json",
-      "sha256": "e0d2711f741fa6dab4553b5e73fe75580b0c42f2109ca89d54cb4324d6b643c9",
+      "sha256": "29cde10b8a352256c47a85c7034479dc5d9510b19876d1bc06be2fe5a1b2905e",
       "model_type": "dense",
       "display": {
         "type_symbol": "square.stack.3d.up",
@@ -30,7 +30,7 @@
       "id": "qwen3.8-27b",
       "name": "Qwen 3.8 27B",
       "path": "cards/qwen3.8-27b.json",
-      "sha256": "c25978dc3fed0d7218bb063564e9209787941d6cc49abbd1780873a3d6d0ceed",
+      "sha256": "de376ecfe9472aabbecf07c246a6b131bd0cebd6ac6d40c6dcd2509791c308c2",
       "model_type": "dense",
       "display": {
         "type_symbol": "square.stack.3d.up",
@@ -43,7 +43,8 @@
         }
       },
       "amesh_profile_ids": [
-        "yukon-qwen3_8-27b-4bit"
+        "yukon-qwen3_8-27b-4bit",
+        "yukon-qwen3_8-27b-mtp-4bit"
       ]
     }
   ]

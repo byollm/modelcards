@@ -348,7 +348,7 @@
         "adaptive_depth": false,
         "schedule": "Request fixed native MTP depth 1. The native loader clamps HTTP depth to 1..5. The acceptance-ratio gate applies to fixed depth one and may switch to serial. Require native cycle logs to establish actual execution.",
         "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. The depth-1 exact serial-output comparison failed; see qwen36-mlx-node-depth1-parity-failure-20261004. Serving, tools, cancellation, GUI and private-mesh gates remain unqualified."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,
@@ -378,8 +378,11 @@
       },
       "validation": {
         "local_output_fidelity": {
-          "state": "not_tested",
-          "evidence_ids": []
+          "state": "failed",
+          "evidence_ids": [
+            "qwen36-mlx-node-depth1-parity-failure-20261004"
+          ],
+          "notes": "5/8 exact serial-output comparisons passed; 3/8 failed. Code or prose output bytes differed with greedy sampling. Token counts and native MTP execution do not establish output parity."
         },
         "openai_api": {
           "state": "not_tested",
@@ -450,7 +453,7 @@
         }
       },
       "benchmark_ids": [],
-      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
+      "notes": "Comparison-only candidate. The fixed depth-1 greedy test failed exact serial-output parity: 5/8 comparisons passed and 3/8 failed. It has no Amesh launch profile or eligible speed result. Context and minimum memory limits remain unknown; this trial does not qualify long-context serving. The engine is separate from the Qwen3.8 Yukon worker."
     },
     {
       "id": "qwen36-mlx-node-native-mtp-depth3-f6db56b",
@@ -592,7 +595,7 @@
         "adaptive_depth": false,
         "schedule": "Request fixed native MTP depth 3. The native loader clamps HTTP depth to 1..5. Fixed depths above one are exempt from the acceptance-ratio gate. Unsupported-input or backend fallback remains possible. Require native cycle logs to establish actual execution.",
         "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. The depth-3 exact serial-output comparison failed; see qwen36-mlx-node-depth3-parity-failure-20261004. Serving, tools, cancellation, GUI and private-mesh gates remain unqualified."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,
@@ -622,8 +625,11 @@
       },
       "validation": {
         "local_output_fidelity": {
-          "state": "not_tested",
-          "evidence_ids": []
+          "state": "failed",
+          "evidence_ids": [
+            "qwen36-mlx-node-depth3-parity-failure-20261004"
+          ],
+          "notes": "4/8 exact serial-output comparisons passed; 4/8 failed. Code or prose output bytes differed with greedy sampling. Token counts and native MTP execution do not establish output parity."
         },
         "openai_api": {
           "state": "not_tested",
@@ -694,7 +700,7 @@
         }
       },
       "benchmark_ids": [],
-      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
+      "notes": "Comparison-only candidate. The fixed depth-3 greedy test failed exact serial-output parity: 4/8 comparisons passed and 4/8 failed. It has no Amesh launch profile or eligible speed result. Context and minimum memory limits remain unknown; this trial does not qualify long-context serving. The engine is separate from the Qwen3.8 Yukon worker."
     },
     {
       "id": "qwen36-mlx-node-native-mtp-depth5-f6db56b",
@@ -836,7 +842,7 @@
         "adaptive_depth": false,
         "schedule": "Request fixed native MTP depth 5. The native loader clamps HTTP depth to 1..5. Fixed depths above one are exempt from the acceptance-ratio gate. Unsupported-input or backend fallback remains possible. Require native cycle logs to establish actual execution.",
         "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/engine/params.rs",
-        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. Runtime tests remain not_tested."
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison. The acceptance-ratio gate is pinned at https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs; fixed depth one alone is gated, while fixed depths above one and adaptive mode are exempt. The depth-5 exact serial-output comparison failed; see qwen36-mlx-node-depth5-parity-failure-20261004. Serving, tools, cancellation, GUI and private-mesh gates remain unqualified."
       },
       "context_tokens": null,
       "min_unified_memory_gib": null,
@@ -866,8 +872,11 @@
       },
       "validation": {
         "local_output_fidelity": {
-          "state": "not_tested",
-          "evidence_ids": []
+          "state": "failed",
+          "evidence_ids": [
+            "qwen36-mlx-node-depth5-parity-failure-20261004"
+          ],
+          "notes": "4/8 exact serial-output comparisons passed; 4/8 failed. Code or prose output bytes differed with greedy sampling. Token counts and native MTP execution do not establish output parity."
         },
         "openai_api": {
           "state": "not_tested",
@@ -938,7 +947,7 @@
         }
       },
       "benchmark_ids": [],
-      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
+      "notes": "Comparison-only candidate. The fixed depth-5 greedy test failed exact serial-output parity: 4/8 comparisons passed and 4/8 failed. It has no Amesh launch profile or eligible speed result. Context and minimum memory limits remain unknown; this trial does not qualify long-context serving. The engine is separate from the Qwen3.8 Yukon worker."
     }
   ],
   "evidence": [
@@ -1067,12 +1076,78 @@
       "receipt_sha256": "a229760dd5736bcd9d43fab95a1b3759d835fc57cdaf78ab43588c8d272e9459",
       "validated_checks": [],
       "validated_capabilities": [],
-      "notes": "Build, immutable dependency installation, CLI/serve/benchmark help and native import passed on macOS 26.4 without model loading or GPU inference. Rust 1.94.0 was required by locked dependencies. Addon and both Metal libraries declare macOS 15.0 minimum; this does not prove execution on macOS 15. All remote serving, output parity, speed, tools, cancellation, GUI and private-mesh checks remain not_tested.",
+      "notes": "Build, immutable dependency installation, CLI/serve/benchmark help and native import passed on macOS 26.4 without model loading or GPU inference. Rust 1.94.0 was required by locked dependencies. Addon and both Metal libraries declare macOS 15.0 minimum; this does not prove execution on macOS 15. This build-only receipt does not qualify remote serving, output parity, speed, tools, cancellation, GUI or private mesh; later comparison receipts report output-parity failures separately.",
       "recipe_ids": [
         "qwen36-mlx-node-native-mtp-depth1-f6db56b",
         "qwen36-mlx-node-native-mtp-depth3-f6db56b",
         "qwen36-mlx-node-native-mtp-depth5-f6db56b"
       ]
+    },
+    {
+      "id": "qwen36-mlx-node-depth1-parity-failure-20261004",
+      "kind": "local_functional",
+      "state": "failed",
+      "scope": "Fixed-depth 1 MLX-Node OpenAI Responses versus the same engine's serial mode: exact output bytes across short, long, code and prose controls; two repetitions per workload",
+      "recorded_at": "2026-10-04T02:52:30.691087Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "source_url": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs",
+      "receipt_sha256": "3b58173fe9f55d3c62d430034d4be00f4266b3bebc46e61755dc63c9ae2e7e74",
+      "recipe_ids": [
+        "qwen36-mlx-node-native-mtp-depth1-f6db56b"
+      ],
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "notes": "Exact byte comparisons: 5/8 passed, 3/8 failed. Failed pairs (first differing byte offset): code/run2 (50), prose/run1 (922), prose/run2 (660). Across all three depths, 13/24 comparisons passed and 11/24 failed; every depth failed code or prose. All 32 requests completed with 512 output tokens and zero cached input tokens. Native log brackets prove nonzero MTP cycles for the speculative arms and zero cycles for serial; the matching external head loaded 31 tensors. Temperature=0, reasoning=none, store=false, fresh cache salt, chained cycles disabled; prompt counts short=68, long=2061, code=109, prose=99. This is a byte-transcript comparison, not an independent token-ID ledger or general quality score. No rate, gain, API qualification, tool, cancellation, GUI or private-mesh claim follows. Engine source f6db56b1f169be9fcba11ee02fd99645bb6e938c; official Node 22.19.0 executable SHA256 0d005c18e095027ca8f9fe1cc1126f767ee4ad7b004f4d6fb781ec4228a7c5d1. Target EigenLabs/Qwen3.6-27B-MLX-mixed-4bit@d474d4c06a74635d31dc5e40ae908ae50abac372; unchanged 15-file target tree SHA256 9197a617d0b2c3dfb19589e380c0d66c13cc8f628fe545c737ac0427c63df617 (sorted path NUL decimal bytes NUL file SHA256 LF). Head mlx-community/Qwen3.6-27B-MTP-4bit@83795d546e9d328160e593fb0bf10b2bf2fe637e, model.safetensors SHA256 b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539, 238934137 bytes. Before/after receipt SHA256 948ba8f635c3b1d3e23a381497d051dddd3cd01b9d179c7b8f842c5827a1ba89/76ea05cd4a65d30b87c922fbb0751d9ad0c66d896a8eb870a3197fca045c6fa6; source and staged target/head files remained unchanged, runtime files were not rehashed after the run. Native log SHA256 d1284193258eba6ef9ed1c934f3ac332d267acf4f8caf0203d73f225942e7337. Failed numerical fidelity keeps this candidate outside fastest-validated selection."
+    },
+    {
+      "id": "qwen36-mlx-node-depth3-parity-failure-20261004",
+      "kind": "local_functional",
+      "state": "failed",
+      "scope": "Fixed-depth 3 MLX-Node OpenAI Responses versus the same engine's serial mode: exact output bytes across short, long, code and prose controls; two repetitions per workload",
+      "recorded_at": "2026-10-04T02:52:30.691087Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "source_url": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs",
+      "receipt_sha256": "3b58173fe9f55d3c62d430034d4be00f4266b3bebc46e61755dc63c9ae2e7e74",
+      "recipe_ids": [
+        "qwen36-mlx-node-native-mtp-depth3-f6db56b"
+      ],
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "notes": "Exact byte comparisons: 4/8 passed, 4/8 failed. Failed pairs (first differing byte offset): code/run1 (26), code/run2 (50), prose/run1 (147), prose/run2 (660). Across all three depths, 13/24 comparisons passed and 11/24 failed; every depth failed code or prose. All 32 requests completed with 512 output tokens and zero cached input tokens. Native log brackets prove nonzero MTP cycles for the speculative arms and zero cycles for serial; the matching external head loaded 31 tensors. Temperature=0, reasoning=none, store=false, fresh cache salt, chained cycles disabled; prompt counts short=68, long=2061, code=109, prose=99. This is a byte-transcript comparison, not an independent token-ID ledger or general quality score. No rate, gain, API qualification, tool, cancellation, GUI or private-mesh claim follows. Engine source f6db56b1f169be9fcba11ee02fd99645bb6e938c; official Node 22.19.0 executable SHA256 0d005c18e095027ca8f9fe1cc1126f767ee4ad7b004f4d6fb781ec4228a7c5d1. Target EigenLabs/Qwen3.6-27B-MLX-mixed-4bit@d474d4c06a74635d31dc5e40ae908ae50abac372; unchanged 15-file target tree SHA256 9197a617d0b2c3dfb19589e380c0d66c13cc8f628fe545c737ac0427c63df617 (sorted path NUL decimal bytes NUL file SHA256 LF). Head mlx-community/Qwen3.6-27B-MTP-4bit@83795d546e9d328160e593fb0bf10b2bf2fe637e, model.safetensors SHA256 b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539, 238934137 bytes. Before/after receipt SHA256 948ba8f635c3b1d3e23a381497d051dddd3cd01b9d179c7b8f842c5827a1ba89/76ea05cd4a65d30b87c922fbb0751d9ad0c66d896a8eb870a3197fca045c6fa6; source and staged target/head files remained unchanged, runtime files were not rehashed after the run. Native log SHA256 d1284193258eba6ef9ed1c934f3ac332d267acf4f8caf0203d73f225942e7337. Failed numerical fidelity keeps this candidate outside fastest-validated selection."
+    },
+    {
+      "id": "qwen36-mlx-node-depth5-parity-failure-20261004",
+      "kind": "local_functional",
+      "state": "failed",
+      "scope": "Fixed-depth 5 MLX-Node OpenAI Responses versus the same engine's serial mode: exact output bytes across short, long, code and prose controls; two repetitions per workload",
+      "recorded_at": "2026-10-04T02:52:30.691087Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "source_url": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/mtp_decode.rs",
+      "receipt_sha256": "3b58173fe9f55d3c62d430034d4be00f4266b3bebc46e61755dc63c9ae2e7e74",
+      "recipe_ids": [
+        "qwen36-mlx-node-native-mtp-depth5-f6db56b"
+      ],
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "notes": "Exact byte comparisons: 4/8 passed, 4/8 failed. Failed pairs (first differing byte offset): code/run1 (26), code/run2 (50), prose/run1 (732), prose/run2 (660). Across all three depths, 13/24 comparisons passed and 11/24 failed; every depth failed code or prose. All 32 requests completed with 512 output tokens and zero cached input tokens. Native log brackets prove nonzero MTP cycles for the speculative arms and zero cycles for serial; the matching external head loaded 31 tensors. Temperature=0, reasoning=none, store=false, fresh cache salt, chained cycles disabled; prompt counts short=68, long=2061, code=109, prose=99. This is a byte-transcript comparison, not an independent token-ID ledger or general quality score. No rate, gain, API qualification, tool, cancellation, GUI or private-mesh claim follows. Engine source f6db56b1f169be9fcba11ee02fd99645bb6e938c; official Node 22.19.0 executable SHA256 0d005c18e095027ca8f9fe1cc1126f767ee4ad7b004f4d6fb781ec4228a7c5d1. Target EigenLabs/Qwen3.6-27B-MLX-mixed-4bit@d474d4c06a74635d31dc5e40ae908ae50abac372; unchanged 15-file target tree SHA256 9197a617d0b2c3dfb19589e380c0d66c13cc8f628fe545c737ac0427c63df617 (sorted path NUL decimal bytes NUL file SHA256 LF). Head mlx-community/Qwen3.6-27B-MTP-4bit@83795d546e9d328160e593fb0bf10b2bf2fe637e, model.safetensors SHA256 b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539, 238934137 bytes. Before/after receipt SHA256 948ba8f635c3b1d3e23a381497d051dddd3cd01b9d179c7b8f842c5827a1ba89/76ea05cd4a65d30b87c922fbb0751d9ad0c66d896a8eb870a3197fca045c6fa6; source and staged target/head files remained unchanged, runtime files were not rehashed after the run. Native log SHA256 d1284193258eba6ef9ed1c934f3ac332d267acf4f8caf0203d73f225942e7337. Failed numerical fidelity keeps this candidate outside fastest-validated selection."
     }
   ]
 }
