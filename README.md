@@ -13,8 +13,8 @@ download, install, launch, or sharing authority.
 
 | Card | Recipes |
 | --- | --- |
-| [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline |
-| [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated serial API baseline; pinned native-MTP benchmark candidate |
+| [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline; MLX-Node MTP comparison at depths 1, 3 and 5 |
+| [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated serial API baseline; Yukon native-MTP worker; MLX-Node DFlash2 comparison |
 
 ## Choose the fastest validated recipe
 
@@ -70,10 +70,14 @@ Run both checks from the repository root:
 ```sh
 npx --yes --package ajv-cli@5.0.0 --package ajv-formats@3.0.1 ajv validate --spec=draft2020 --strict=true -s schemas/model-card.schema.json -d 'cards/*.json' -c ajv-formats --all-errors
 go run ./cmd/check-cards/main.go
+go test ./cmd/check-cards/main.go ./cmd/check-cards/main_test.go
 ```
 
 The Go check rejects unresolved references, duplicate profile mappings, promotion
-without serving checks, and head tree digests that disagree with their file hashes.
+without serving checks, and head or drafter tree digests that disagree with their
+file hashes and sizes. Passed checks need local evidence for that recipe and that
+check. A local source build cannot stand in for a serving test. Evidence declares
+its scope with `recipe_ids`, `validated_checks`, and `validated_capabilities`.
 Before publishing card changes, regenerate `index.json` with
 `go run ./cmd/check-cards/main.go -write-index`. Its hashes must describe the exact
 published card bytes.
@@ -94,6 +98,8 @@ only the matching recipe and its referenced evidence:
 | Recipe and speculation | `recipes[].id`, `recipes[].speculation` |
 | Declared launch settings | `recipes[].context_tokens`, `sampling`, `concurrency` |
 | Engine and source pins | `recipes[].engine`, `target`, `transform` |
+| Drafter and block policy | `recipes[].speculation.drafter`, `block_tokens`, `adaptive_depth` |
+| macOS artifact minimum | `recipes[].engine.minimum_macos_version` |
 | Validation states | `recipes[].validation` |
 | Scoped benchmark results | `recipes[].benchmark_ids` joined to `evidence[].id` |
 
@@ -109,6 +115,11 @@ different Mac or the Amesh serving adapter.
 Hash scopes are explicit. A file SHA-256, a SHA-256 manifest, and a digest of a
 staged file tree are different values. Never substitute one for another. Build
 only the named inventory when a recipe pins a subset of an upstream repository.
+
+`comparison_only` recipes are unlinked candidates. They have no helper profile or
+runtime pack. Their context and memory fields may be `null` until a trial records
+real limits; other recipes need known positive limits. Keep those values unknown
+in the interface. An artifact's advertised context is not a tested serving limit.
 
 ## Current evidence
 
@@ -131,6 +142,14 @@ charges seed prefill within the 512-token window. Model loading and
 input-independent warmup are excluded. The official speedup compares the original
 pinned serial baseline worker with the winning candidate. It is not a pure
 steady-state decode rate or a same-current-candidate serial comparison.
+
+The MLX-Node candidates pin unchanged source and exact staged head or drafter
+files. Qwen 3.6 requests fixed native-MTP depths 1, 3 and 5. Qwen 3.8 DFlash2 uses
+one anchor plus seven proposals. These use the upstream `/v1/responses` endpoint,
+not an Amesh Chat Completions adapter. The local build, help and import checks
+passed without loading a model. Remote execution, output parity, speed, tools,
+cancellation, GUI launch and private sharing remain untested. No performance value
+or launch recommendation comes from that build check.
 
 Repository data and documentation use [Apache-2.0](LICENSE). Each model, head,
 drafter, and engine keeps its own license. This repository's license does not

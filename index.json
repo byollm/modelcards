@@ -3,14 +3,14 @@
   "schema_version": 1,
   "kind": "amesh.model-card-index",
   "authority": "display_only",
-  "generated_at": "2026-10-04T01:07:59Z",
+  "generated_at": "2026-10-04T01:20:32Z",
   "repository": "https://github.com/byollm/modelcards",
   "cards": [
     {
       "id": "qwen3.6-27b",
       "name": "Qwen 3.6 27B",
       "path": "cards/qwen3.6-27b.json",
-      "sha256": "3719879dc20cc1d3b326a6da3264ff922a4ad60690759114bd81e810b6edca8a",
+      "sha256": "a45647e8583bc0078288a35172f0d2321bd0af843110b115805737985c8ae49f",
       "model_type": "dense",
       "display": {
         "type_symbol": "square.stack.3d.up",
@@ -30,7 +30,7 @@
       "id": "qwen3.8-27b",
       "name": "Qwen 3.8 27B",
       "path": "cards/qwen3.8-27b.json",
-      "sha256": "2b149a29eb8eea9853466b377191bf9d305ce7e0ba23dd4ad8a85bbf03a614f6",
+      "sha256": "6a7fa4be504d69b0db60968f6a6e0b49c5d4da5104f7ada8a1a2dbf8fc0f0449",
       "model_type": "dense",
       "display": {
         "type_symbol": "square.stack.3d.up",

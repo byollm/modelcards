@@ -207,6 +207,738 @@
       "amesh_profile_ids": [
         "yukon-qwen3_6-27b-mixed4bit"
       ]
+    },
+    {
+      "id": "qwen36-mlx-node-native-mtp-depth1-f6db56b",
+      "role": "candidate",
+      "amesh_profile_ids": [],
+      "target": {
+        "repository": "EigenLabs/Qwen3.6-27B-MLX-mixed-4bit",
+        "revision": "d474d4c06a74635d31dc5e40ae908ae50abac372",
+        "quantization": "MLX affine 4-bit/group-64 defaults, with named 6/8-bit body overrides",
+        "notes": "Snapshot revision pinned. No independently verified public per-file manifest is recorded in this card. Target declares one MTP layer. The Node external-head loader uses matching affine 4-bit/group-64 packing for mtp.* tensors."
+      },
+      "engine": {
+        "backend": "mlx-node",
+        "source_url": "https://github.com/mlx-node/mlx-node",
+        "source_revision": "f6db56b1f169be9fcba11ee02fd99645bb6e938c",
+        "product": "@mlx-node/cli",
+        "minimum_macos_version": "15.0",
+        "build": {
+          "tools": {
+            "node": "25.9.0",
+            "rust": "1.94.0",
+            "yarn": "4.18.0",
+            "cmake": "4.1.2",
+            "macos_sdk": "26.4"
+          },
+          "environment": {
+            "MACOSX_DEPLOYMENT_TARGET": "15.0",
+            "MLX_METALLIB_STRICT": "1"
+          },
+          "lockfile_sha256": {
+            "Cargo.lock": "3b57bb60b80bceb2f71657ed590d4e031d924742a031d72e5198f7e6a97610ad",
+            "yarn.lock": "59597d51f5c8e42276e15d996eb84ea81ce8e08f7cc76f511079412f671851a8"
+          },
+          "components": [
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx-core.darwin-arm64.node",
+              "sha256": "ca1eed3f52d1733560fc7b95aa882e167b4c09e826e4a66014bbe2f8bcb3f9d4",
+              "bytes": 69099120
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx.metallib",
+              "sha256": "341b16e6fb845341c053ac43b160fb7566f82ed7db98af82430752efae714791",
+              "bytes": 144883608
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/paged_attn.metallib",
+              "sha256": "fc908eab98c597806249102a30dea676e7da84dadb24fa389f4f4bd96bf75094",
+              "bytes": 19549426
+            },
+            {
+              "path": "packages/core/index.cjs",
+              "sha256": "a6d52953e94ce1f57087520b42df0baf391b6bbb23f8dbfbe1ed88e9c225aace",
+              "bytes": 36703
+            },
+            {
+              "path": "packages/core/index.d.cts",
+              "sha256": "c128835d46bc888796bd02190c361f324d67d5f2ae184fa189c929198ed0b8be",
+              "bytes": 231539
+            },
+            {
+              "path": "packages/cli/dist/cli.js",
+              "sha256": "3d1d467f3f78f3fa9acae892eadecbe5f6bbc072867e6e4d7fd51aa14b8b151e",
+              "bytes": 4498
+            }
+          ],
+          "source_dependencies": [
+            {
+              "repository": "https://github.com/mlx-node/mlx",
+              "revision": "053e43fec802adf41b835cadf70453ecc41c076a"
+            },
+            {
+              "repository": "https://github.com/fmtlib/fmt",
+              "revision": "407c905e45ad75fc29bf0f9bb7c5c2fd3475976f"
+            },
+            {
+              "repository": "https://github.com/antirez/gguf-tools",
+              "revision": "8fa6eb65236618e28fd7710a0fba565f7faa1848"
+            }
+          ],
+          "dependency_archives": [
+            {
+              "url": "https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip",
+              "sha256": "4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4"
+            },
+            {
+              "url": "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz",
+              "sha256": "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d"
+            }
+          ],
+          "evidence_ids": [
+            "qwen36-mlx-node-local-build-20261004"
+          ],
+          "notes": "Locally built from unchanged source on macOS 26.4. Addon and both Metal libraries declare macOS 15.0 minimum. This file list identifies built components; it is not a complete runnable package manifest. Preserve workspace packages, dist output, dependencies and relative links. No public binary release or remote execution is claimed."
+        },
+        "notes": "MIT engine. OpenAI Responses is the upstream HTTP protocol. No Amesh Chat Completions adapter or signed helper profile is qualified."
+      },
+      "speculation": {
+        "method": "native_mtp",
+        "head": {
+          "repository": "mlx-community/Qwen3.6-27B-MTP-4bit",
+          "revision": "83795d546e9d328160e593fb0bf10b2bf2fe637e",
+          "quantization": "MLX affine 4-bit/group-64",
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "9447a082427fa6dc8284c45dacec4e40ce4b33af75e2e5c2175da29bb45eedf5",
+              "bytes": 1892
+            },
+            {
+              "path": "config.json",
+              "sha256": "64c2cf173fc259540fa39f6f07ccfa51359a3d7be76c2d0e8b9fdecbe4446b0d",
+              "bytes": 3779
+            },
+            {
+              "path": "model.safetensors",
+              "sha256": "b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539",
+              "bytes": 238934137
+            },
+            {
+              "path": "model.safetensors.index.json",
+              "sha256": "6233c1805e07b028f4eb34d50dac5bf22a676728eeaf2ea43c4f94523af7a4fc",
+              "bytes": 1973
+            }
+          ],
+          "tree_digest": {
+            "sha256": "aaca447984e9b8436fc153a1fa51e8acd6246f87fe5b48be913e81ae3f0402bf",
+            "algorithm": "sha256_of_sorted_relative_path_nul_decimal_bytes_nul_file_sha256_lf",
+            "inventory": [
+              "README.md",
+              "config.json",
+              "model.safetensors",
+              "model.safetensors.index.json"
+            ]
+          },
+          "notes": "Exact staged four-file loader inventory, including README and index; excludes receipt, tokenizer and other repository files. Apache-2.0 head. Attach at target/mtp-drafter. config.json block_size=3; that training/config value is not the Node HTTP draft-depth default."
+        },
+        "max_offered_draft_tokens": 1,
+        "max_effective_draft_tokens": 1,
+        "adaptive_depth": false,
+        "schedule": "Request fixed native MTP depth 1. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+      },
+      "context_tokens": null,
+      "min_unified_memory_gib": null,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "reject"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "tools": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "thinking": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "openai_api": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "usage": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "output_limit": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "stream_cancel_recovery": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "typed_tool_continuation": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "gui_launch": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "private_mesh": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "same_workload_speedup": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "launch": {
+        "availability": "comparison_only",
+        "protocol": "openai_responses",
+        "argv": [
+          "node",
+          "packages/cli/dist/cli.js",
+          "serve",
+          "--models-dir",
+          "{comparison_store}",
+          "--model",
+          "{model_directory_name}",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "{port}",
+          "--log-dir",
+          "{comparison_log_directory}"
+        ],
+        "parameters": {
+          "http.endpoint": "/v1/responses",
+          "request.temperature": 0,
+          "request.reasoning.effort": "none",
+          "request.store": false,
+          "request.cache_salt": "{fresh_random_value_per_request}",
+          "extra_body.generation_mode": "mtp",
+          "environment.MLX_DISABLE_PROMPT_CACHE_KEY": "1",
+          "environment.MLX_MTP_CHAINED_CYCLES": "0",
+          "extra_body.mtp_depth": 1,
+          "artifact.head_layout": "{target_directory}/mtp-drafter"
+        }
+      },
+      "benchmark_ids": [],
+      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
+    },
+    {
+      "id": "qwen36-mlx-node-native-mtp-depth3-f6db56b",
+      "role": "candidate",
+      "amesh_profile_ids": [],
+      "target": {
+        "repository": "EigenLabs/Qwen3.6-27B-MLX-mixed-4bit",
+        "revision": "d474d4c06a74635d31dc5e40ae908ae50abac372",
+        "quantization": "MLX affine 4-bit/group-64 defaults, with named 6/8-bit body overrides",
+        "notes": "Snapshot revision pinned. No independently verified public per-file manifest is recorded in this card. Target declares one MTP layer. The Node external-head loader uses matching affine 4-bit/group-64 packing for mtp.* tensors."
+      },
+      "engine": {
+        "backend": "mlx-node",
+        "source_url": "https://github.com/mlx-node/mlx-node",
+        "source_revision": "f6db56b1f169be9fcba11ee02fd99645bb6e938c",
+        "product": "@mlx-node/cli",
+        "minimum_macos_version": "15.0",
+        "build": {
+          "tools": {
+            "node": "25.9.0",
+            "rust": "1.94.0",
+            "yarn": "4.18.0",
+            "cmake": "4.1.2",
+            "macos_sdk": "26.4"
+          },
+          "environment": {
+            "MACOSX_DEPLOYMENT_TARGET": "15.0",
+            "MLX_METALLIB_STRICT": "1"
+          },
+          "lockfile_sha256": {
+            "Cargo.lock": "3b57bb60b80bceb2f71657ed590d4e031d924742a031d72e5198f7e6a97610ad",
+            "yarn.lock": "59597d51f5c8e42276e15d996eb84ea81ce8e08f7cc76f511079412f671851a8"
+          },
+          "components": [
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx-core.darwin-arm64.node",
+              "sha256": "ca1eed3f52d1733560fc7b95aa882e167b4c09e826e4a66014bbe2f8bcb3f9d4",
+              "bytes": 69099120
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx.metallib",
+              "sha256": "341b16e6fb845341c053ac43b160fb7566f82ed7db98af82430752efae714791",
+              "bytes": 144883608
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/paged_attn.metallib",
+              "sha256": "fc908eab98c597806249102a30dea676e7da84dadb24fa389f4f4bd96bf75094",
+              "bytes": 19549426
+            },
+            {
+              "path": "packages/core/index.cjs",
+              "sha256": "a6d52953e94ce1f57087520b42df0baf391b6bbb23f8dbfbe1ed88e9c225aace",
+              "bytes": 36703
+            },
+            {
+              "path": "packages/core/index.d.cts",
+              "sha256": "c128835d46bc888796bd02190c361f324d67d5f2ae184fa189c929198ed0b8be",
+              "bytes": 231539
+            },
+            {
+              "path": "packages/cli/dist/cli.js",
+              "sha256": "3d1d467f3f78f3fa9acae892eadecbe5f6bbc072867e6e4d7fd51aa14b8b151e",
+              "bytes": 4498
+            }
+          ],
+          "source_dependencies": [
+            {
+              "repository": "https://github.com/mlx-node/mlx",
+              "revision": "053e43fec802adf41b835cadf70453ecc41c076a"
+            },
+            {
+              "repository": "https://github.com/fmtlib/fmt",
+              "revision": "407c905e45ad75fc29bf0f9bb7c5c2fd3475976f"
+            },
+            {
+              "repository": "https://github.com/antirez/gguf-tools",
+              "revision": "8fa6eb65236618e28fd7710a0fba565f7faa1848"
+            }
+          ],
+          "dependency_archives": [
+            {
+              "url": "https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip",
+              "sha256": "4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4"
+            },
+            {
+              "url": "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz",
+              "sha256": "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d"
+            }
+          ],
+          "evidence_ids": [
+            "qwen36-mlx-node-local-build-20261004"
+          ],
+          "notes": "Locally built from unchanged source on macOS 26.4. Addon and both Metal libraries declare macOS 15.0 minimum. This file list identifies built components; it is not a complete runnable package manifest. Preserve workspace packages, dist output, dependencies and relative links. No public binary release or remote execution is claimed."
+        },
+        "notes": "MIT engine. OpenAI Responses is the upstream HTTP protocol. No Amesh Chat Completions adapter or signed helper profile is qualified."
+      },
+      "speculation": {
+        "method": "native_mtp",
+        "head": {
+          "repository": "mlx-community/Qwen3.6-27B-MTP-4bit",
+          "revision": "83795d546e9d328160e593fb0bf10b2bf2fe637e",
+          "quantization": "MLX affine 4-bit/group-64",
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "9447a082427fa6dc8284c45dacec4e40ce4b33af75e2e5c2175da29bb45eedf5",
+              "bytes": 1892
+            },
+            {
+              "path": "config.json",
+              "sha256": "64c2cf173fc259540fa39f6f07ccfa51359a3d7be76c2d0e8b9fdecbe4446b0d",
+              "bytes": 3779
+            },
+            {
+              "path": "model.safetensors",
+              "sha256": "b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539",
+              "bytes": 238934137
+            },
+            {
+              "path": "model.safetensors.index.json",
+              "sha256": "6233c1805e07b028f4eb34d50dac5bf22a676728eeaf2ea43c4f94523af7a4fc",
+              "bytes": 1973
+            }
+          ],
+          "tree_digest": {
+            "sha256": "aaca447984e9b8436fc153a1fa51e8acd6246f87fe5b48be913e81ae3f0402bf",
+            "algorithm": "sha256_of_sorted_relative_path_nul_decimal_bytes_nul_file_sha256_lf",
+            "inventory": [
+              "README.md",
+              "config.json",
+              "model.safetensors",
+              "model.safetensors.index.json"
+            ]
+          },
+          "notes": "Exact staged four-file loader inventory, including README and index; excludes receipt, tokenizer and other repository files. Apache-2.0 head. Attach at target/mtp-drafter. config.json block_size=3; that training/config value is not the Node HTTP draft-depth default."
+        },
+        "max_offered_draft_tokens": 3,
+        "max_effective_draft_tokens": 3,
+        "adaptive_depth": false,
+        "schedule": "Request fixed native MTP depth 3. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+      },
+      "context_tokens": null,
+      "min_unified_memory_gib": null,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "reject"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "tools": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "thinking": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "openai_api": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "usage": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "output_limit": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "stream_cancel_recovery": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "typed_tool_continuation": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "gui_launch": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "private_mesh": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "same_workload_speedup": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "launch": {
+        "availability": "comparison_only",
+        "protocol": "openai_responses",
+        "argv": [
+          "node",
+          "packages/cli/dist/cli.js",
+          "serve",
+          "--models-dir",
+          "{comparison_store}",
+          "--model",
+          "{model_directory_name}",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "{port}",
+          "--log-dir",
+          "{comparison_log_directory}"
+        ],
+        "parameters": {
+          "http.endpoint": "/v1/responses",
+          "request.temperature": 0,
+          "request.reasoning.effort": "none",
+          "request.store": false,
+          "request.cache_salt": "{fresh_random_value_per_request}",
+          "extra_body.generation_mode": "mtp",
+          "environment.MLX_DISABLE_PROMPT_CACHE_KEY": "1",
+          "environment.MLX_MTP_CHAINED_CYCLES": "0",
+          "extra_body.mtp_depth": 3,
+          "artifact.head_layout": "{target_directory}/mtp-drafter"
+        }
+      },
+      "benchmark_ids": [],
+      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
+    },
+    {
+      "id": "qwen36-mlx-node-native-mtp-depth5-f6db56b",
+      "role": "candidate",
+      "amesh_profile_ids": [],
+      "target": {
+        "repository": "EigenLabs/Qwen3.6-27B-MLX-mixed-4bit",
+        "revision": "d474d4c06a74635d31dc5e40ae908ae50abac372",
+        "quantization": "MLX affine 4-bit/group-64 defaults, with named 6/8-bit body overrides",
+        "notes": "Snapshot revision pinned. No independently verified public per-file manifest is recorded in this card. Target declares one MTP layer. The Node external-head loader uses matching affine 4-bit/group-64 packing for mtp.* tensors."
+      },
+      "engine": {
+        "backend": "mlx-node",
+        "source_url": "https://github.com/mlx-node/mlx-node",
+        "source_revision": "f6db56b1f169be9fcba11ee02fd99645bb6e938c",
+        "product": "@mlx-node/cli",
+        "minimum_macos_version": "15.0",
+        "build": {
+          "tools": {
+            "node": "25.9.0",
+            "rust": "1.94.0",
+            "yarn": "4.18.0",
+            "cmake": "4.1.2",
+            "macos_sdk": "26.4"
+          },
+          "environment": {
+            "MACOSX_DEPLOYMENT_TARGET": "15.0",
+            "MLX_METALLIB_STRICT": "1"
+          },
+          "lockfile_sha256": {
+            "Cargo.lock": "3b57bb60b80bceb2f71657ed590d4e031d924742a031d72e5198f7e6a97610ad",
+            "yarn.lock": "59597d51f5c8e42276e15d996eb84ea81ce8e08f7cc76f511079412f671851a8"
+          },
+          "components": [
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx-core.darwin-arm64.node",
+              "sha256": "ca1eed3f52d1733560fc7b95aa882e167b4c09e826e4a66014bbe2f8bcb3f9d4",
+              "bytes": 69099120
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/mlx.metallib",
+              "sha256": "341b16e6fb845341c053ac43b160fb7566f82ed7db98af82430752efae714791",
+              "bytes": 144883608
+            },
+            {
+              "path": "packages/core/npm/darwin-arm64/paged_attn.metallib",
+              "sha256": "fc908eab98c597806249102a30dea676e7da84dadb24fa389f4f4bd96bf75094",
+              "bytes": 19549426
+            },
+            {
+              "path": "packages/core/index.cjs",
+              "sha256": "a6d52953e94ce1f57087520b42df0baf391b6bbb23f8dbfbe1ed88e9c225aace",
+              "bytes": 36703
+            },
+            {
+              "path": "packages/core/index.d.cts",
+              "sha256": "c128835d46bc888796bd02190c361f324d67d5f2ae184fa189c929198ed0b8be",
+              "bytes": 231539
+            },
+            {
+              "path": "packages/cli/dist/cli.js",
+              "sha256": "3d1d467f3f78f3fa9acae892eadecbe5f6bbc072867e6e4d7fd51aa14b8b151e",
+              "bytes": 4498
+            }
+          ],
+          "source_dependencies": [
+            {
+              "repository": "https://github.com/mlx-node/mlx",
+              "revision": "053e43fec802adf41b835cadf70453ecc41c076a"
+            },
+            {
+              "repository": "https://github.com/fmtlib/fmt",
+              "revision": "407c905e45ad75fc29bf0f9bb7c5c2fd3475976f"
+            },
+            {
+              "repository": "https://github.com/antirez/gguf-tools",
+              "revision": "8fa6eb65236618e28fd7710a0fba565f7faa1848"
+            }
+          ],
+          "dependency_archives": [
+            {
+              "url": "https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip",
+              "sha256": "4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4"
+            },
+            {
+              "url": "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz",
+              "sha256": "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d"
+            }
+          ],
+          "evidence_ids": [
+            "qwen36-mlx-node-local-build-20261004"
+          ],
+          "notes": "Locally built from unchanged source on macOS 26.4. Addon and both Metal libraries declare macOS 15.0 minimum. This file list identifies built components; it is not a complete runnable package manifest. Preserve workspace packages, dist output, dependencies and relative links. No public binary release or remote execution is claimed."
+        },
+        "notes": "MIT engine. OpenAI Responses is the upstream HTTP protocol. No Amesh Chat Completions adapter or signed helper profile is qualified."
+      },
+      "speculation": {
+        "method": "native_mtp",
+        "head": {
+          "repository": "mlx-community/Qwen3.6-27B-MTP-4bit",
+          "revision": "83795d546e9d328160e593fb0bf10b2bf2fe637e",
+          "quantization": "MLX affine 4-bit/group-64",
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "9447a082427fa6dc8284c45dacec4e40ce4b33af75e2e5c2175da29bb45eedf5",
+              "bytes": 1892
+            },
+            {
+              "path": "config.json",
+              "sha256": "64c2cf173fc259540fa39f6f07ccfa51359a3d7be76c2d0e8b9fdecbe4446b0d",
+              "bytes": 3779
+            },
+            {
+              "path": "model.safetensors",
+              "sha256": "b9983c04801d7ad28e2f49cc7517ff3e8bfff9d2346255dcf7478f42165c0539",
+              "bytes": 238934137
+            },
+            {
+              "path": "model.safetensors.index.json",
+              "sha256": "6233c1805e07b028f4eb34d50dac5bf22a676728eeaf2ea43c4f94523af7a4fc",
+              "bytes": 1973
+            }
+          ],
+          "tree_digest": {
+            "sha256": "aaca447984e9b8436fc153a1fa51e8acd6246f87fe5b48be913e81ae3f0402bf",
+            "algorithm": "sha256_of_sorted_relative_path_nul_decimal_bytes_nul_file_sha256_lf",
+            "inventory": [
+              "README.md",
+              "config.json",
+              "model.safetensors",
+              "model.safetensors.index.json"
+            ]
+          },
+          "notes": "Exact staged four-file loader inventory, including README and index; excludes receipt, tokenizer and other repository files. Apache-2.0 head. Attach at target/mtp-drafter. config.json block_size=3; that training/config value is not the Node HTTP draft-depth default."
+        },
+        "max_offered_draft_tokens": 5,
+        "max_effective_draft_tokens": 5,
+        "adaptive_depth": false,
+        "schedule": "Request fixed native MTP depth 5. The HTTP mapper accepts mtp_depth; the native loader clamps depth to 1..5. Its acceptance gate may fall back to serial; require native cycle logs to establish actual execution.",
+        "schedule_source": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/crates/mlx-core/src/models/qwen3_5/model/chat_backend.rs",
+        "notes": "HTTP does not expose adaptive-depth control. SDK adaptive depth is a separate opt-in path. Chained cycles are explicitly disabled for the planned M4 comparison."
+      },
+      "context_tokens": null,
+      "min_unified_memory_gib": null,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "reject"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "tools": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "thinking": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "openai_api": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "usage": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "output_limit": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "stream_cancel_recovery": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "typed_tool_continuation": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "gui_launch": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "private_mesh": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "same_workload_speedup": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "launch": {
+        "availability": "comparison_only",
+        "protocol": "openai_responses",
+        "argv": [
+          "node",
+          "packages/cli/dist/cli.js",
+          "serve",
+          "--models-dir",
+          "{comparison_store}",
+          "--model",
+          "{model_directory_name}",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "{port}",
+          "--log-dir",
+          "{comparison_log_directory}"
+        ],
+        "parameters": {
+          "http.endpoint": "/v1/responses",
+          "request.temperature": 0,
+          "request.reasoning.effort": "none",
+          "request.store": false,
+          "request.cache_salt": "{fresh_random_value_per_request}",
+          "extra_body.generation_mode": "mtp",
+          "environment.MLX_DISABLE_PROMPT_CACHE_KEY": "1",
+          "environment.MLX_MTP_CHAINED_CYCLES": "0",
+          "extra_body.mtp_depth": 5,
+          "artifact.head_layout": "{target_directory}/mtp-drafter"
+        }
+      },
+      "benchmark_ids": [],
+      "notes": "Bounded comparison candidate for text-only, greedy, reasoning-disabled, one-request tests. No measured performance or output parity yet. Configured context and memory requirement are unknown; artifact context metadata is not serving qualification. This engine is separate from the Qwen3.8 Yukon winning worker."
     }
   ],
   "evidence": [
@@ -223,7 +955,27 @@
         "unified_memory_gib": 128,
         "os": "macOS 15.4.1"
       },
-      "notes": "Observed against exact final-v4 native/adapter hashes and pinned weights. Tool tests require numeric arguments and is_error=false. Cancellation concerns the streaming route; nonstream cancellation during prefill remains untested. This is a functional receipt description, not a quality score or raw benchmark parity claim."
+      "notes": "Observed against exact final-v4 native/adapter hashes and pinned weights. Tool tests require numeric arguments and is_error=false. Cancellation concerns the streaming route; nonstream cancellation during prefill remains untested. This is a functional receipt description, not a quality score or raw benchmark parity claim.",
+      "validated_checks": [
+        "local_output_fidelity",
+        "openai_api",
+        "streaming",
+        "usage",
+        "output_limit",
+        "stream_cancel_recovery",
+        "typed_tool_continuation",
+        "gui_launch",
+        "private_mesh"
+      ],
+      "validated_capabilities": [
+        "chat",
+        "tools",
+        "streaming",
+        "thinking"
+      ],
+      "recipe_ids": [
+        "qwen36-yukon-serial-api-v4"
+      ]
     },
     {
       "id": "qwen36-m4max-serial-short-20261003",
@@ -256,7 +1008,14 @@
         "value": 25.664082982735756,
         "first_token_seconds": 0.461430541
       },
-      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline."
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline.",
+      "validated_checks": [
+        "same_workload_speedup"
+      ],
+      "validated_capabilities": [],
+      "recipe_ids": [
+        "qwen36-yukon-serial-api-v4"
+      ]
     },
     {
       "id": "qwen36-m4max-serial-long-20261003",
@@ -289,7 +1048,31 @@
         "value": 24.3896402506458,
         "first_token_seconds": 10.266763917
       },
-      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline."
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline.",
+      "validated_checks": [
+        "same_workload_speedup"
+      ],
+      "validated_capabilities": [],
+      "recipe_ids": [
+        "qwen36-yukon-serial-api-v4"
+      ]
+    },
+    {
+      "id": "qwen36-mlx-node-local-build-20261004",
+      "kind": "local_functional",
+      "state": "passed",
+      "scope": "Local unchanged-source build, CLI help, native import and static macOS minimum inspection; no model loaded",
+      "recorded_at": "2026-10-04T01:11:18.923Z",
+      "source_url": "https://github.com/mlx-node/mlx-node/blob/f6db56b1f169be9fcba11ee02fd99645bb6e938c/packages/cli/src/commands/serve.ts",
+      "receipt_sha256": "a229760dd5736bcd9d43fab95a1b3759d835fc57cdaf78ab43588c8d272e9459",
+      "validated_checks": [],
+      "validated_capabilities": [],
+      "notes": "Build, immutable dependency installation, CLI/serve/benchmark help and native import passed on macOS 26.4 without model loading or GPU inference. Rust 1.94.0 was required by locked dependencies. Addon and both Metal libraries declare macOS 15.0 minimum; this does not prove execution on macOS 15. All remote serving, output parity, speed, tools, cancellation, GUI and private-mesh checks remain not_tested.",
+      "recipe_ids": [
+        "qwen36-mlx-node-native-mtp-depth1-f6db56b",
+        "qwen36-mlx-node-native-mtp-depth3-f6db56b",
+        "qwen36-mlx-node-native-mtp-depth5-f6db56b"
+      ]
     }
   ]
 }
