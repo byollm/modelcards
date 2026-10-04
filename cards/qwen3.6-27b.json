@@ -1,0 +1,293 @@
+{
+  "$schema": "../schemas/model-card.schema.json",
+  "schema_version": 1,
+  "kind": "amesh.model-card",
+  "id": "qwen3.6-27b",
+  "name": "Qwen 3.6 27B",
+  "model_type": "dense",
+  "display": {
+    "type_symbol": "square.stack.3d.up",
+    "capability_symbols": {
+      "chat": "bubble.left.and.bubble.right",
+      "tools": "wrench.and.screwdriver",
+      "streaming": "waveform",
+      "thinking": "point.3.connected.trianglepath.dotted",
+      "speculation": "bolt.fill"
+    }
+  },
+  "selection": {
+    "policy": "fastest_validated",
+    "metric": "decode_tokens_per_second",
+    "required_checks": [
+      "local_output_fidelity",
+      "openai_api",
+      "streaming",
+      "usage",
+      "output_limit",
+      "stream_cancel_recovery",
+      "typed_tool_continuation",
+      "gui_launch",
+      "private_mesh"
+    ],
+    "comparable_fields": [
+      "target.repository",
+      "target.revision",
+      "hardware",
+      "context_tokens",
+      "sampling",
+      "concurrency",
+      "workload_id",
+      "measurement.method",
+      "measurement.cache_policy",
+      "measurement.includes_reasoning"
+    ],
+    "fallback_policy": "visible_reason_required"
+  },
+  "recipes": [
+    {
+      "id": "qwen36-yukon-serial-api-v4",
+      "role": "serial_fallback",
+      "target": {
+        "repository": "EigenLabs/Qwen3.6-27B-MLX-mixed-4bit",
+        "revision": "d474d4c06a74635d31dc5e40ae908ae50abac372",
+        "quantization": "MLX mixed 4-bit",
+        "notes": "Snapshot revision pinned. No independently verified public per-file manifest is recorded in this card."
+      },
+      "engine": {
+        "backend": "mlx-swift",
+        "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge",
+        "source_revision": "0863b06ac16e26e48fc06e97444095b00feb66d4",
+        "product": "amesh-yukon-native",
+        "binary_sha256": "c6122b05dec9371f9e5aa598bacc686886ef1967dbdd934f1348cac54da3b348",
+        "source_patch_sha256": "c1468985b6f8a1a89d35eec313651c2083d683775e643c760bddbebe2ca9e1f0",
+        "adapter_sha256": "178465859b86451bab97117270fc887afffeae98d4b24f3a97c7c8664b20c583",
+        "bundle_sha256": "a32c490d722e8ee6d7ff3d41d2551d8c2d76b46e57c2d37de1f2f97380184a5f",
+        "notes": "Locally signed validation build. Patch fixes output termination, request-local typed tool parsing, and Foundation value conversion; numerical kernels unchanged. No public release artifact is linked."
+      },
+      "speculation": {
+        "method": "none"
+      },
+      "context_tokens": 65536,
+      "min_unified_memory_gib": 48,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "select_matching_validated_recipe"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "tools": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "streaming": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "thinking": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ],
+          "notes": "Default thinking and enable_thinking=false were exercised separately. Do not disable reasoning silently to improve a speed number."
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ],
+          "notes": "The separate no-thinking integer-list check returns the correct visible integers 1 through 46. It does not establish complete serial token parity over arbitrary prompts."
+        },
+        "openai_api": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "streaming": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "usage": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "output_limit": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "stream_cancel_recovery": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ],
+          "notes": "Streaming prefill candidate only. Same worker and model identity; immediate one-token READY recovery. No nonstream prefill-cancel claim."
+        },
+        "typed_tool_continuation": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "gui_launch": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "private_mesh": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-serving-20261003"
+          ]
+        },
+        "same_workload_speedup": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen36-m4max-serial-short-20261003",
+            "qwen36-m4max-serial-long-20261003"
+          ],
+          "notes": "Short 7.641% and long 6.544% median decode gain against stock MLX on exact same weights and request payloads. Not speculative."
+        }
+      },
+      "launch": {
+        "availability": "local_validation_only",
+        "protocol": "openai_chat_completions",
+        "argv": [
+          "amesh-yukon-server",
+          "--model",
+          "{target_directory}",
+          "--host",
+          "{host}",
+          "--port",
+          "{port}",
+          "--model-id",
+          "{model_id}",
+          "--context-tokens",
+          "{context_tokens}"
+        ],
+        "parameters": {
+          "native_engine_kind": "single_request",
+          "model_type": "qwen3_5",
+          "tool_call_parser": "auto",
+          "reasoning_parser": "qwen3"
+        },
+        "runtime_pack": {
+          "pack_id": "yukon-native-qwen36-27b-20261003",
+          "revision": 2,
+          "sha256": "c9123d0980e3eaf044c59d649dd86d85bfc63a12b2758f719b09a87f5dc520e0",
+          "expires_at": "2026-11-02T21:00:00Z"
+        }
+      },
+      "benchmark_ids": [
+        "qwen36-m4max-serial-short-20261003",
+        "qwen36-m4max-serial-long-20261003"
+      ],
+      "notes": "Serial is an explicit fallback and baseline. Validated hardware and measured contexts are limited to the attached evidence. The configured 65,536-token ceiling is not a benchmark at that full context. Use the signed runtime pack through the helper; card argv is descriptive and does not authorize execution.",
+      "amesh_profile_ids": [
+        "yukon-qwen3_6-27b-mixed4bit"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "qwen36-m4max-serial-serving-20261003",
+      "kind": "local_functional",
+      "state": "passed",
+      "scope": "Amesh serial OpenAI API, real GUI launch, private FloCode typed read and continuation, stream usage/output cap, and streaming prefill cancellation followed by recovery",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "notes": "Observed against exact final-v4 native/adapter hashes and pinned weights. Tool tests require numeric arguments and is_error=false. Cancellation concerns the streaming route; nonstream cancellation during prefill remains untested. This is a functional receipt description, not a quality score or raw benchmark parity claim."
+    },
+    {
+      "id": "qwen36-m4max-serial-short-20261003",
+      "kind": "local_benchmark",
+      "state": "passed",
+      "scope": "Single-client loopback OpenAI SSE decode, including reasoning; prompt processing excluded from decode span",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "7f9685fa0d6818884812faec3bdf1eaf801aff098ea77be8ef80c3d27829a4f4",
+      "harness_source_sha256": "4a64df3fb4aa1033dbd2ab4bed3cd61d3bb1f40329fb8092d33c638e73080eaf",
+      "workload_id": "qwen36-fixed-short-128",
+      "measurement": {
+        "metric": "decode_tokens_per_second",
+        "method": "(completion_tokens - 1) / (last_text_delta_time - first_text_delta_time)",
+        "aggregation": "median of three measured requests; one excluded warmup",
+        "measured_runs": 3,
+        "warmup_runs": 1,
+        "concurrency": 1,
+        "sampling": "temperature=0; default thinking enabled",
+        "cache_policy": "fresh cache per request by single_request source; cached token count absent from wire usage",
+        "includes_reasoning": true,
+        "prompt_tokens": 66,
+        "completion_tokens": 128,
+        "value": 25.664082982735756,
+        "first_token_seconds": 0.461430541
+      },
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline."
+    },
+    {
+      "id": "qwen36-m4max-serial-long-20261003",
+      "kind": "local_benchmark",
+      "state": "passed",
+      "scope": "Single-client loopback OpenAI SSE decode, including reasoning; prompt processing excluded from decode span",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "7f9685fa0d6818884812faec3bdf1eaf801aff098ea77be8ef80c3d27829a4f4",
+      "harness_source_sha256": "4a64df3fb4aa1033dbd2ab4bed3cd61d3bb1f40329fb8092d33c638e73080eaf",
+      "workload_id": "qwen36-fixed-long-128",
+      "measurement": {
+        "metric": "decode_tokens_per_second",
+        "method": "(completion_tokens - 1) / (last_text_delta_time - first_text_delta_time)",
+        "aggregation": "median of three measured requests; one excluded warmup",
+        "measured_runs": 3,
+        "warmup_runs": 1,
+        "concurrency": 1,
+        "sampling": "temperature=0; default thinking enabled",
+        "cache_policy": "fresh cache per request by single_request source; cached token count absent from wire usage",
+        "includes_reasoning": true,
+        "prompt_tokens": 2059,
+        "completion_tokens": 128,
+        "value": 24.3896402506458,
+        "first_token_seconds": 10.266763917
+      },
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. Exact payload/token counts match the separately retained stock MLX same-weight baseline."
+    }
+  ]
+}

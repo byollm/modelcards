@@ -1,0 +1,507 @@
+{
+  "$schema": "../schemas/model-card.schema.json",
+  "schema_version": 1,
+  "kind": "amesh.model-card",
+  "id": "qwen3.8-27b",
+  "name": "Qwen 3.8 27B",
+  "model_type": "dense",
+  "display": {
+    "type_symbol": "square.stack.3d.up",
+    "capability_symbols": {
+      "chat": "bubble.left.and.bubble.right",
+      "tools": "wrench.and.screwdriver",
+      "streaming": "waveform",
+      "thinking": "point.3.connected.trianglepath.dotted",
+      "speculation": "bolt.fill"
+    }
+  },
+  "selection": {
+    "policy": "fastest_validated",
+    "metric": "decode_tokens_per_second",
+    "required_checks": [
+      "local_output_fidelity",
+      "openai_api",
+      "streaming",
+      "usage",
+      "output_limit",
+      "stream_cancel_recovery",
+      "typed_tool_continuation",
+      "gui_launch",
+      "private_mesh"
+    ],
+    "comparable_fields": [
+      "target.repository",
+      "target.revision",
+      "hardware",
+      "context_tokens",
+      "sampling",
+      "concurrency",
+      "workload_id",
+      "measurement.method",
+      "measurement.cache_policy",
+      "measurement.includes_reasoning"
+    ],
+    "fallback_policy": "visible_reason_required"
+  },
+  "recipes": [
+    {
+      "id": "qwen38-yukon-native-mtp-0863b06",
+      "role": "candidate",
+      "target": {
+        "repository": "EigenLabs/Qwen3.8-27B-4bit",
+        "revision": "eda45ab47f465d08d6558f0353a2346e2eb9d5b3",
+        "quantization": "MLX affine 4-bit, group size 64",
+        "manifest_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/fixtures/reference_qwen3_8_27b_4bit.sha256",
+        "manifest_sha256": "6058b1ae56744a1ee66ec305f880373d9f91f62af586ad0147207826850f63b0",
+        "notes": "The upstream manifest pins ten files. The pinned Hugging Face revision also contains .gitattributes, which the manifest does not cover. Reproduce the named manifest inventory; do not assert a whole-repository digest."
+      },
+      "engine": {
+        "backend": "mlxfast-native-mtp",
+        "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge",
+        "source_revision": "0863b06ac16e26e48fc06e97444095b00feb66d4",
+        "product": "mlxfast-runtime-worker",
+        "notes": "Locally built standalone challenge worker and benchmark payload. Exact winning source with the recorded serial-serving compatibility patch; no numerical kernel changes. This is not the unbuilt speculative API prototype or a released Amesh runtime pack.",
+        "binary_sha256": "4a61654c1a7561b4c97dc98c24a8a53b31a0481084f93cc049fbb3b2172077b1",
+        "source_patch_sha256": "c1468985b6f8a1a89d35eec313651c2083d683775e643c760bddbebe2ca9e1f0",
+        "bundle_sha256": "3c757584eba0dbd88aba05bbeae488e0d0ddc6efdb8b331cad27357909fbefbf"
+      },
+      "speculation": {
+        "method": "native_mtp",
+        "head": {
+          "repository": "amal-david/qwen38-mtp-head-q2-q4-rerank-v1",
+          "revision": "ae6282749a52e052496dd5300b4aa441df7301e8",
+          "quantization": "mixed Q2/Q4 reranked native MTP head",
+          "files": [
+            {
+              "path": "model.safetensors",
+              "sha256": "d038fd41e2d5dab1b3905c115d859fdc98dfbfde9862c14ebb82c2b3247ec2f1",
+              "bytes": 427742600
+            }
+          ],
+          "tree_digest": {
+            "sha256": "559b24ebca354018e4402fdb1f5af1afe5a0721bd2ebf04133500d846f7d5f71",
+            "algorithm": "sha256_of_sorted_file_sha256_two_spaces_relative_path_lf",
+            "inventory": [
+              "model.safetensors"
+            ]
+          },
+          "manifest_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/mtp-head.manifest.json",
+          "manifest_sha256": "7b3f1685463e176eb8e423f45b5847ef9141cea9e802d046bfb0794a60cff667",
+          "notes": "The winning workflow stages only model.safetensors. Its tree digest hashes the UTF-8 line <file-sha256><two spaces>model.safetensors<LF>. It does not hash the entire Hugging Face repository or its .gitattributes. File LFS metadata and declared tree digest were checked; no local model load is implied."
+        },
+        "max_offered_draft_tokens": 8,
+        "max_effective_draft_tokens": 7,
+        "schedule": "Adaptive per-position acceptance EMA and marginal cost model; zero through seven actual drafts per round; offered ceiling eight; ship depth-price arm",
+        "schedule_source": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/Sources/MLXFastModel/Qwen36MTPBlockSession.swift",
+        "notes": "The source initializer replaces the stale constant-one draftPolicy initializer with costModelDepth. The actual emitted/accepted token ledger must be recorded. Setting offered depth eight does not mean eight drafts occur on every round."
+      },
+      "context_tokens": 65536,
+      "min_unified_memory_gib": 32,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "select_matching_validated_recipe"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "tools": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "thinking": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-native-mtp-fixed-window-parity-20261004"
+          ],
+          "notes": "Passed only for the attached standalone 512-token fixed window against the same-candidate serial reference. Window continues beyond EOS. No API, stop-policy, or arbitrary-prompt fidelity claim."
+        },
+        "openai_api": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "streaming": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "usage": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "output_limit": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "stream_cancel_recovery": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "typed_tool_continuation": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "gui_launch": {
+          "state": "not_tested",
+          "evidence_ids": []
+        },
+        "private_mesh": {
+          "state": "not_tested",
+          "evidence_ids": []
+        }
+      },
+      "launch": {
+        "availability": "benchmark_worker_only",
+        "protocol": "mlxfast_jsonl",
+        "argv": [
+          "mlxfast-runtime-worker",
+          "mtp-runtime-worker",
+          "--weights",
+          "{target_directory}",
+          "--mtp-head",
+          "{head_directory}"
+        ],
+        "parameters": {
+          "ipc_offered_mtp_depth": 8
+        }
+      },
+      "benchmark_ids": [
+        "qwen38-yukon-ranked-mtp-0863b06"
+      ],
+      "notes": "Candidate for local comparison. Standalone fixed-window same-build serial parity passed the attached fixture. API, private route, GUI, tools, cancellation, and API stop/output-limit checks remain not_tested. Card order does not promote it. The context and memory floor are comparison settings, not validated full-context MTP limits.",
+      "amesh_profile_ids": [],
+      "transform": {
+        "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/Sources/MLXFastTransform/Transform.swift",
+        "tree_digest": {
+          "sha256": "b53e4991737cdf50827e518e7559628874d3ff6d5f63bebc057ddbb16a89e2cd",
+          "algorithm": "sha256_of_sorted_relative_path_nul_raw_file_sha256_nul",
+          "inventory": [
+            "chat_template.jinja",
+            "config.json",
+            "generation_config.json",
+            "model-00001-of-00003.safetensors",
+            "model-00002-of-00003.safetensors",
+            "model-00003-of-00003.safetensors",
+            "model.safetensors.index.json",
+            "tokenizer.json",
+            "tokenizer_config.json"
+          ]
+        },
+        "notes": "Expected nine-file transformed text tower. Digest concatenates each sorted UTF-8 relative path, NUL, raw 32-byte file SHA-256, NUL, then hashes the stream. It differs from the head tree digest algorithm. Transformation preserves the target numerical tensor values and rewrites its layout metadata."
+      }
+    },
+    {
+      "id": "qwen38-yukon-serial-api-v4",
+      "role": "serial_fallback",
+      "target": {
+        "repository": "EigenLabs/Qwen3.8-27B-4bit",
+        "revision": "eda45ab47f465d08d6558f0353a2346e2eb9d5b3",
+        "quantization": "MLX affine 4-bit, group size 64",
+        "manifest_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/fixtures/reference_qwen3_8_27b_4bit.sha256",
+        "manifest_sha256": "6058b1ae56744a1ee66ec305f880373d9f91f62af586ad0147207826850f63b0",
+        "notes": "The upstream manifest pins ten files. The pinned Hugging Face revision also contains .gitattributes, which the manifest does not cover. Reproduce the named manifest inventory; do not assert a whole-repository digest."
+      },
+      "engine": {
+        "backend": "mlx-swift",
+        "source_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge",
+        "source_revision": "0863b06ac16e26e48fc06e97444095b00feb66d4",
+        "product": "amesh-yukon-native",
+        "binary_sha256": "c6122b05dec9371f9e5aa598bacc686886ef1967dbdd934f1348cac54da3b348",
+        "source_patch_sha256": "c1468985b6f8a1a89d35eec313651c2083d683775e643c760bddbebe2ca9e1f0",
+        "adapter_sha256": "178465859b86451bab97117270fc887afffeae98d4b24f3a97c7c8664b20c583",
+        "bundle_sha256": "a32c490d722e8ee6d7ff3d41d2551d8c2d76b46e57c2d37de1f2f97380184a5f",
+        "notes": "Locally signed validation build. Patch fixes output termination, request-local typed tool parsing, and Foundation value conversion; numerical kernels unchanged. No public release artifact is linked."
+      },
+      "speculation": {
+        "method": "none"
+      },
+      "context_tokens": 65536,
+      "min_unified_memory_gib": 32,
+      "concurrency": 1,
+      "sampling": {
+        "mode": "greedy",
+        "temperature": 0,
+        "unsupported_policy": "select_matching_validated_recipe"
+      },
+      "capabilities": {
+        "chat": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "tools": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "streaming": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "thinking": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ],
+          "notes": "Default thinking and enable_thinking=false were exercised separately. Do not disable reasoning silently to improve a speed number."
+        }
+      },
+      "validation": {
+        "local_output_fidelity": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ],
+          "notes": "The separate no-thinking integer-list check returns the correct visible integers 1 through 46. It does not establish complete serial token parity over arbitrary prompts."
+        },
+        "openai_api": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "streaming": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "usage": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "output_limit": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "stream_cancel_recovery": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ],
+          "notes": "Streaming prefill candidate only. Same worker and model identity; immediate one-token READY recovery. No nonstream prefill-cancel claim."
+        },
+        "typed_tool_continuation": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "gui_launch": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "private_mesh": {
+          "state": "passed",
+          "evidence_ids": [
+            "qwen38-m4max-serial-serving-20261003"
+          ]
+        },
+        "same_workload_speedup": {
+          "state": "not_tested",
+          "evidence_ids": [],
+          "notes": "No stock Qwen 3.8 baseline. Absolute throughput only."
+        }
+      },
+      "launch": {
+        "availability": "local_validation_only",
+        "protocol": "openai_chat_completions",
+        "argv": [
+          "amesh-yukon-server",
+          "--model",
+          "{target_directory}",
+          "--host",
+          "{host}",
+          "--port",
+          "{port}",
+          "--model-id",
+          "{model_id}",
+          "--context-tokens",
+          "{context_tokens}"
+        ],
+        "parameters": {
+          "native_engine_kind": "single_request",
+          "model_type": "qwen3_5",
+          "tool_call_parser": "auto",
+          "reasoning_parser": "qwen3"
+        },
+        "runtime_pack": {
+          "pack_id": "yukon-native-qwen38-27b-20261003",
+          "revision": 2,
+          "sha256": "502e260a3bb64e0a7d84246d2bb6be87fb5d4b7c16a1c2700b13bad95b62452d",
+          "expires_at": "2026-11-02T21:00:00Z"
+        }
+      },
+      "benchmark_ids": [
+        "qwen38-m4max-serial-short-20261003",
+        "qwen38-m4max-serial-long-20261003"
+      ],
+      "notes": "Serial is an explicit fallback and baseline. Validated hardware and measured contexts are limited to the attached evidence. The configured 65,536-token ceiling is not a benchmark at that full context. Use the signed runtime pack through the helper; card argv is descriptive and does not authorize execution.",
+      "amesh_profile_ids": [
+        "yukon-qwen3_8-27b-4bit"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "qwen38-m4max-serial-serving-20261003",
+      "kind": "local_functional",
+      "state": "passed",
+      "scope": "Amesh serial OpenAI API, real GUI launch, private FloCode typed read and continuation, stream usage/output cap, and streaming prefill cancellation followed by recovery",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "notes": "Observed against exact final-v4 native/adapter hashes and pinned weights. Tool tests require numeric arguments and is_error=false. Cancellation concerns the streaming route; nonstream cancellation during prefill remains untested. This is a functional receipt description, not a quality score or raw benchmark parity claim."
+    },
+    {
+      "id": "qwen38-m4max-serial-short-20261003",
+      "kind": "local_benchmark",
+      "state": "passed",
+      "scope": "Single-client loopback OpenAI SSE decode, including reasoning; prompt processing excluded from decode span",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "d0d9b03e4bf3e4d05276340a1756f99e7a635a4b2af0a39660ad6fbd5009e768",
+      "harness_source_sha256": "4a64df3fb4aa1033dbd2ab4bed3cd61d3bb1f40329fb8092d33c638e73080eaf",
+      "workload_id": "qwen38-fixed-short-128",
+      "measurement": {
+        "metric": "decode_tokens_per_second",
+        "method": "(completion_tokens - 1) / (last_text_delta_time - first_text_delta_time)",
+        "aggregation": "median of three measured requests; one excluded warmup",
+        "measured_runs": 3,
+        "warmup_runs": 1,
+        "concurrency": 1,
+        "sampling": "temperature=0; default thinking enabled",
+        "cache_policy": "fresh cache per request by single_request source; cached token count absent from wire usage",
+        "includes_reasoning": true,
+        "prompt_tokens": 107,
+        "completion_tokens": 128,
+        "value": 29.29808112852056,
+        "first_token_seconds": 0.583594459
+      },
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. No stock Qwen 3.8 baseline exists. The result does not establish speculative speed or an engine speedup."
+    },
+    {
+      "id": "qwen38-m4max-serial-long-20261003",
+      "kind": "local_benchmark",
+      "state": "passed",
+      "scope": "Single-client loopback OpenAI SSE decode, including reasoning; prompt processing excluded from decode span",
+      "recorded_at": "2026-10-03T23:21:00Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "d0d9b03e4bf3e4d05276340a1756f99e7a635a4b2af0a39660ad6fbd5009e768",
+      "harness_source_sha256": "4a64df3fb4aa1033dbd2ab4bed3cd61d3bb1f40329fb8092d33c638e73080eaf",
+      "workload_id": "qwen38-fixed-long-128",
+      "measurement": {
+        "metric": "decode_tokens_per_second",
+        "method": "(completion_tokens - 1) / (last_text_delta_time - first_text_delta_time)",
+        "aggregation": "median of three measured requests; one excluded warmup",
+        "measured_runs": 3,
+        "warmup_runs": 1,
+        "concurrency": 1,
+        "sampling": "temperature=0; default thinking enabled",
+        "cache_policy": "fresh cache per request by single_request source; cached token count absent from wire usage",
+        "includes_reasoning": true,
+        "prompt_tokens": 2100,
+        "completion_tokens": 128,
+        "value": 27.711287410530115,
+        "first_token_seconds": 10.538243708
+      },
+      "notes": "All 128 generated tokens fall within reasoning; no visible answer in this capped case. No stock Qwen 3.8 baseline exists. The result does not establish speculative speed or an engine speedup."
+    },
+    {
+      "id": "qwen38-yukon-ranked-mtp-0863b06",
+      "kind": "upstream_benchmark",
+      "state": "passed",
+      "scope": "Yukon paired decode-only native-MTP benchmark; exact-greedy parity on the ranked eight-prompt set",
+      "recorded_at": "2026-08-30T00:00:01Z",
+      "source_url": "https://www.yukon.org/api/benchmarks/5d1ee4d7-80bd-4555-b182-6505f26ef495",
+      "workload_id": "qwen3.8-27b-mtp-v1-eight-hidden-prompts",
+      "measurement": {
+        "metric": "serial_relative_speedup",
+        "method": "median of eight per-prompt paired serial seconds/token divided by candidate seconds/token; depth-zero serial control",
+        "aggregation": "median of per-prompt ratios; even-count mean of central values",
+        "measured_runs": 8,
+        "concurrency": 1,
+        "sampling": "exact greedy",
+        "cache_policy": "paired fresh sessions in ranked harness; eight hidden prompts",
+        "includes_reasoning": true,
+        "completion_tokens": 512,
+        "value": 3.7291100105909
+      },
+      "notes": "Upstream result at commit 0863b06. This ratio is not tokens/second, and is not an M4 Max serving measurement. The benchmark record does not publish complete OS/hardware details. Local serving validation is absent."
+    },
+    {
+      "id": "qwen38-m4max-native-mtp-fixed-window-parity-20261004",
+      "kind": "local_functional",
+      "state": "passed",
+      "scope": "Standalone native-MTP fixed-window parity against a fresh serial reference produced by the same candidate build on the same Mac",
+      "recorded_at": "2026-10-04T00:51:15Z",
+      "hardware": {
+        "platform": "darwin/arm64",
+        "chip": "Apple M4 Max",
+        "gpu_cores": 40,
+        "unified_memory_gib": 128,
+        "os": "macOS 15.4.1"
+      },
+      "receipt_sha256": "72ae3d7d104fbda9efc8b326aaab2af22f584d0899ea306c3451a6a4c8fcc915",
+      "workload_id": "public-longcopy-gate-english-seed512-output512",
+      "correctness": {
+        "fixture_url": "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/blob/0863b06ac16e26e48fc06e97444095b00feb66d4/correctness_prompts/public_longcopy_gate_english_512_256.json",
+        "fixture_sha256": "3d922b1a0ada04d9827b905c881232bf50fb697d4be9ab3ee21346f7e0b8ae9c",
+        "seed_tokens": 512,
+        "seed_sha256": "73e848f927879e6d8b8179cb708d8af697890fece44a3db57ba101ab6acbbc7b",
+        "reference_rows": 513,
+        "reference_sha256": "66858d9561663b62e58a97191428da0a3816cdb00f67a93f724c7b2d0cf2301e",
+        "emitted_tokens": 512,
+        "matched_tokens": 512,
+        "declared_rows": 574,
+        "residual_count": 0,
+        "accepted_draft_tokens": 435,
+        "proposed_draft_tokens": 496,
+        "target_tail_tokens": 78,
+        "max_effective_draft_tokens": 7,
+        "stop_policy": "fixed window continues beyond EOS"
+      },
+      "notes": "Strict offered-depth-eight parity. All 512 emitted token IDs equal the fresh serial reference. Independent ledger reconstruction matched all 574 declared top-one IDs to that same reference, with zero residuals. This is a same-candidate internal check, not an independent official fidelity test, API result, or paired speed result. API stopping, output limits, tools, cancellation, private sharing, and GUI are untested for this recipe.",
+      "harness_executable_sha256": "ced9a2659d7cb7ed3b1ea2280f0f1006d7cf1917363ae05ebbb249334ef30215"
+    }
+  ]
+}

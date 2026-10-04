@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/byollm/modelcards/main/schemas/model-card.schema.json",
+  "title": "Amesh model card and serving recipes",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "id", "name", "model_type", "display", "selection", "recipes", "evidence"],
+  "properties": {
+    "$schema": { "type": "string", "format": "uri-reference" },
+    "schema_version": { "const": 1 },
+    "kind": { "const": "amesh.model-card" },
+    "id": { "$ref": "#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "model_type": { "enum": ["dense", "mixture_of_experts", "embedding", "reranker"] },
+    "parameter_count": { "type": "integer", "minimum": 1 },
+    "display": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type_symbol", "capability_symbols"],
+      "properties": {
+        "type_symbol": { "type": "string", "minLength": 1 },
+        "capability_symbols": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "selection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy", "metric", "required_checks", "comparable_fields", "fallback_policy"],
+      "properties": {
+        "policy": { "const": "fastest_validated" },
+        "metric": { "enum": ["decode_tokens_per_second", "request_tokens_per_second", "first_visible_content_seconds", "request_seconds"] },
+        "required_checks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/checkName" } },
+        "comparable_fields": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "fallback_policy": { "const": "visible_reason_required" }
+      }
+    },
+    "recipes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/recipe" } },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$", "maxLength": 128 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "state": { "enum": ["passed", "failed", "not_tested", "in_progress"] },
+    "checkName": { "enum": ["local_output_fidelity", "openai_api", "streaming", "usage", "output_limit", "stream_cancel_recovery", "typed_tool_continuation", "gui_launch", "private_mesh", "same_workload_speedup"] },
+    "check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "evidence_ids"],
+      "properties": {
+        "state": { "$ref": "#/$defs/state" },
+        "evidence_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "file": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "treeDigest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sha256", "algorithm", "inventory"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "algorithm": { "enum": ["sha256_of_sorted_file_sha256_two_spaces_relative_path_lf", "sha256_of_sorted_relative_path_nul_raw_file_sha256_nul"] },
+        "inventory": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "quantization"],
+      "properties": {
+        "repository": { "type": "string", "pattern": "^[^/\\\\]+/[^/\\\\]+$" },
+        "revision": { "$ref": "#/$defs/commit" },
+        "quantization": { "type": "string", "minLength": 1 },
+        "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/file" } },
+        "tree_digest": { "$ref": "#/$defs/treeDigest" },
+        "manifest_url": { "type": "string", "format": "uri" },
+        "manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "notes": { "type": "string" }
+      }
+    },
+    "engine": {
+      "type": "object", "additionalProperties": false,
+      "required": ["backend", "source_url", "source_revision", "product"],
+      "properties": {
+        "backend": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri" },
+        "source_revision": { "$ref": "#/$defs/commit" },
+        "product": { "type": "string", "minLength": 1 },
+        "binary_sha256": { "$ref": "#/$defs/sha256" },
+        "source_patch_sha256": { "$ref": "#/$defs/sha256" },
+        "adapter_sha256": { "$ref": "#/$defs/sha256" },
+        "bundle_sha256": { "$ref": "#/$defs/sha256" },
+        "notes": { "type": "string" }
+      }
+    },
+    "speculation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": { "enum": ["none", "native_mtp", "dflash2", "draft_model"] },
+        "head": { "$ref": "#/$defs/artifact" },
+        "max_offered_draft_tokens": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "max_effective_draft_tokens": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "schedule": { "type": "string", "minLength": 1 },
+        "schedule_source": { "type": "string", "format": "uri" },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "method": { "const": "none" } } },
+          "then": { "properties": { "head": false, "max_offered_draft_tokens": false, "max_effective_draft_tokens": false } },
+          "else": {
+            "required": ["head", "max_offered_draft_tokens", "schedule", "schedule_source"],
+            "properties": {
+              "head": {
+                "type": "object", "required": ["files", "tree_digest"],
+                "properties": {
+                  "files": { "$ref": "#/$defs/artifact/properties/files" },
+                  "tree_digest": { "$ref": "#/$defs/treeDigest" }
+                }
+              },
+              "max_offered_draft_tokens": { "$ref": "#/$defs/speculation/properties/max_offered_draft_tokens" },
+              "schedule": { "$ref": "#/$defs/speculation/properties/schedule" },
+              "schedule_source": { "$ref": "#/$defs/speculation/properties/schedule_source" }
+            }
+          }
+        }
+      ]
+    },
+    "hardware": {
+      "type": "object", "additionalProperties": false,
+      "required": ["platform", "chip", "os"],
+      "properties": {
+        "platform": { "type": "string", "minLength": 1 },
+        "chip": { "type": "string", "minLength": 1 },
+        "gpu_cores": { "type": "integer", "minimum": 1 },
+        "unified_memory_gib": { "type": "integer", "minimum": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "notes": { "type": "string" }
+      }
+    },
+    "launch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["availability", "protocol", "argv"],
+      "properties": {
+        "availability": { "enum": ["local_validation_only", "benchmark_worker_only", "released"] },
+        "protocol": { "enum": ["openai_chat_completions", "mlxfast_jsonl"] },
+        "argv": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "parameters": { "type": "object", "additionalProperties": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }] } },
+        "runtime_pack": {
+          "type": "object", "additionalProperties": false,
+          "required": ["pack_id", "revision", "sha256", "expires_at"],
+          "properties": {
+            "pack_id": { "$ref": "#/$defs/id" },
+            "revision": { "type": "integer", "minimum": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "expires_at": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+    "recipe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "role", "amesh_profile_ids", "target", "engine", "speculation", "context_tokens", "min_unified_memory_gib", "concurrency", "sampling", "capabilities", "validation", "launch", "benchmark_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "role": { "enum": ["candidate", "validated", "serial_fallback", "retired"] },
+        "amesh_profile_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "target": { "$ref": "#/$defs/artifact" },
+        "transform": {
+          "type": "object", "additionalProperties": false,
+          "required": ["source_url", "tree_digest"],
+          "properties": {
+            "source_url": { "type": "string", "format": "uri" },
+            "tree_digest": { "$ref": "#/$defs/treeDigest" },
+            "notes": { "type": "string" }
+          }
+        },
+        "engine": { "$ref": "#/$defs/engine" },
+        "speculation": { "$ref": "#/$defs/speculation" },
+        "context_tokens": { "type": "integer", "minimum": 1 },
+        "min_unified_memory_gib": { "type": "integer", "minimum": 1 },
+        "concurrency": { "type": "integer", "minimum": 1 },
+        "sampling": {
+          "type": "object", "additionalProperties": false,
+          "required": ["mode", "temperature", "unsupported_policy"],
+          "properties": {
+            "mode": { "enum": ["greedy", "stochastic"] },
+            "temperature": { "type": "number", "minimum": 0 },
+            "top_p": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "seed": { "type": "integer" },
+            "unsupported_policy": { "enum": ["reject", "select_matching_validated_recipe"] }
+          }
+        },
+        "capabilities": {
+          "type": "object", "additionalProperties": false,
+          "required": ["chat", "tools", "streaming", "thinking"],
+          "properties": {
+            "chat": { "$ref": "#/$defs/check" },
+            "tools": { "$ref": "#/$defs/check" },
+            "streaming": { "$ref": "#/$defs/check" },
+            "thinking": { "$ref": "#/$defs/check" }
+          }
+        },
+        "validation": {
+          "type": "object", "propertyNames": { "$ref": "#/$defs/checkName" },
+          "additionalProperties": { "$ref": "#/$defs/check" }
+        },
+        "launch": { "$ref": "#/$defs/launch" },
+        "benchmark_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "state", "scope", "recorded_at", "notes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["local_benchmark", "local_functional", "upstream_benchmark"] },
+        "state": { "$ref": "#/$defs/state" },
+        "scope": { "type": "string", "minLength": 1 },
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "hardware": { "$ref": "#/$defs/hardware" },
+        "source_url": { "type": "string", "format": "uri" },
+        "receipt_sha256": { "$ref": "#/$defs/sha256" },
+        "harness_source_sha256": { "$ref": "#/$defs/sha256" },
+        "harness_executable_sha256": { "$ref": "#/$defs/sha256" },
+        "workload_id": { "$ref": "#/$defs/id" },
+        "correctness": {
+          "type": "object", "additionalProperties": false,
+          "required": ["fixture_url", "fixture_sha256", "seed_tokens", "seed_sha256", "reference_rows", "reference_sha256", "emitted_tokens", "matched_tokens", "declared_rows", "residual_count", "stop_policy"],
+          "properties": {
+            "fixture_url": { "type": "string", "format": "uri" },
+            "fixture_sha256": { "$ref": "#/$defs/sha256" },
+            "seed_tokens": { "type": "integer", "minimum": 1 },
+            "seed_sha256": { "$ref": "#/$defs/sha256" },
+            "reference_rows": { "type": "integer", "minimum": 1 },
+            "reference_sha256": { "$ref": "#/$defs/sha256" },
+            "emitted_tokens": { "type": "integer", "minimum": 1 },
+            "matched_tokens": { "type": "integer", "minimum": 1 },
+            "declared_rows": { "type": "integer", "minimum": 1 },
+            "residual_count": { "type": "integer", "minimum": 0 },
+            "accepted_draft_tokens": { "type": "integer", "minimum": 0 },
+            "proposed_draft_tokens": { "type": "integer", "minimum": 0 },
+            "target_tail_tokens": { "type": "integer", "minimum": 0 },
+            "max_effective_draft_tokens": { "type": "integer", "minimum": 0 },
+            "stop_policy": { "type": "string", "minLength": 1 }
+          }
+        },
+        "measurement": {
+          "type": "object", "additionalProperties": false,
+          "required": ["metric", "method", "aggregation", "measured_runs", "concurrency", "sampling", "cache_policy", "includes_reasoning"],
+          "properties": {
+            "metric": { "enum": ["decode_tokens_per_second", "request_tokens_per_second", "first_visible_content_seconds", "request_seconds", "serial_relative_speedup"] },
+            "method": { "type": "string", "minLength": 1 },
+            "aggregation": { "type": "string", "minLength": 1 },
+            "measured_runs": { "type": "integer", "minimum": 1 },
+            "warmup_runs": { "type": "integer", "minimum": 0 },
+            "concurrency": { "type": "integer", "minimum": 1 },
+            "sampling": { "type": "string", "minLength": 1 },
+            "cache_policy": { "type": "string", "minLength": 1 },
+            "includes_reasoning": { "type": "boolean" },
+            "prompt_tokens": { "type": "integer", "minimum": 1 },
+            "completion_tokens": { "type": "integer", "minimum": 1 },
+            "value": { "type": "number", "exclusiveMinimum": 0 },
+            "minimum": { "type": "number", "exclusiveMinimum": 0 },
+            "maximum": { "type": "number", "exclusiveMinimum": 0 },
+            "first_token_seconds": { "type": "number", "minimum": 0 },
+            "first_visible_content_seconds": { "type": "number", "minimum": 0 }
+          }
+        },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

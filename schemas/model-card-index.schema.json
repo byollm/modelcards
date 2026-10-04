@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/byollm/modelcards/main/schemas/model-card-index.schema.json",
+  "title": "Amesh model card display index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "authority", "generated_at", "repository", "cards"],
+  "properties": {
+    "$schema": { "type": "string", "format": "uri-reference" },
+    "schema_version": { "const": 1 },
+    "kind": { "const": "amesh.model-card-index" },
+    "authority": { "const": "display_only" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "repository": { "const": "https://github.com/byollm/modelcards" },
+    "cards": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "path", "sha256", "model_type", "display", "amesh_profile_ids"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$", "maxLength": 128 },
+          "name": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "pattern": "^cards/[a-z0-9][a-z0-9._-]*\\.json$", "maxLength": 256 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "model_type": { "enum": ["dense", "mixture_of_experts", "embedding", "reranker"] },
+          "display": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type_symbol", "capability_symbols"],
+            "properties": {
+              "type_symbol": { "type": "string", "minLength": 1 },
+              "capability_symbols": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } }
+            }
+          },
+          "amesh_profile_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$", "maxLength": 128 }
+          }
+        }
+      }
+    }
+  }
+}

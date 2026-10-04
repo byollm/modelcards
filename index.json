@@ -1,0 +1,50 @@
+{
+  "$schema": "schemas/model-card-index.schema.json",
+  "schema_version": 1,
+  "kind": "amesh.model-card-index",
+  "authority": "display_only",
+  "generated_at": "2026-10-04T01:00:33Z",
+  "repository": "https://github.com/byollm/modelcards",
+  "cards": [
+    {
+      "id": "qwen3.6-27b",
+      "name": "Qwen 3.6 27B",
+      "path": "cards/qwen3.6-27b.json",
+      "sha256": "94020d2d4660179d9e651dc2407cf264eddc366259b30749480ba4c8c897e380",
+      "model_type": "dense",
+      "display": {
+        "type_symbol": "square.stack.3d.up",
+        "capability_symbols": {
+          "chat": "bubble.left.and.bubble.right",
+          "speculation": "bolt.fill",
+          "streaming": "waveform",
+          "thinking": "point.3.connected.trianglepath.dotted",
+          "tools": "wrench.and.screwdriver"
+        }
+      },
+      "amesh_profile_ids": [
+        "yukon-qwen3_6-27b-mixed4bit"
+      ]
+    },
+    {
+      "id": "qwen3.8-27b",
+      "name": "Qwen 3.8 27B",
+      "path": "cards/qwen3.8-27b.json",
+      "sha256": "28d7310d002f2f6e510523fe68e615bd35db5843d02b295c1a46f4e83130b9fe",
+      "model_type": "dense",
+      "display": {
+        "type_symbol": "square.stack.3d.up",
+        "capability_symbols": {
+          "chat": "bubble.left.and.bubble.right",
+          "speculation": "bolt.fill",
+          "streaming": "waveform",
+          "thinking": "point.3.connected.trianglepath.dotted",
+          "tools": "wrench.and.screwdriver"
+        }
+      },
+      "amesh_profile_ids": [
+        "yukon-qwen3_8-27b-4bit"
+      ]
+    }
+  ]
+}
