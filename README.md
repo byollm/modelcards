@@ -15,6 +15,7 @@ download, install, launch, or sharing authority.
 | --- | --- |
 | [Qwen 3.6 27B](cards/qwen3.6-27b.json) | Validated serial API baseline; failed MLX-Node MTP comparisons at depths 1, 3 and 5 |
 | [Qwen 3.8 27B](cards/qwen3.8-27b.json) | Validated NativeV4/APIv5 MTP serving recipe and serial baseline; separate standalone MTP worker; failed MLX-Node DFlash2 comparison |
+| [Qwen 3.8 27B Abliterated](cards/qwen3.8-27b-abliterated.json) | Untested native MTP candidate for a third-party abliterated checkpoint; every check is `not_tested` |
 
 ## Choose the fastest validated recipe
 
