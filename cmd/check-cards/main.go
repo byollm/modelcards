@@ -51,6 +51,7 @@ type evidence struct {
 	ID          string          `json:"id"`
 	Kind        string          `json:"kind"`
 	State       string          `json:"state"`
+	WorkloadID  string          `json:"workload_id"`
 	Hardware    json.RawMessage `json:"hardware"`
 	Measurement json.RawMessage `json:"measurement"`
 	Correctness *struct {
@@ -68,7 +69,10 @@ type card struct {
 	ModelType string  `json:"model_type"`
 	Display   display `json:"display"`
 	Selection struct {
-		RequiredChecks []string `json:"required_checks"`
+		RequiredChecks       []string `json:"required_checks"`
+		Metric               string   `json:"metric"`
+		DefaultWorkloadID    string   `json:"default_workload_id"`
+		DefaultWorkloadLabel string   `json:"default_workload_label"`
 	} `json:"selection"`
 	Recipes  []recipe   `json:"recipes"`
 	Evidence []evidence `json:"evidence"`
@@ -146,6 +150,33 @@ func verify(c card, profiles map[string]string) error {
 			}
 		}
 		records[e.ID] = e
+	}
+	if c.Selection.DefaultWorkloadID == "" && c.Selection.DefaultWorkloadLabel != "" {
+		return fmt.Errorf("default workload label needs a default workload ID")
+	}
+	if c.Selection.DefaultWorkloadID != "" {
+		found := false
+		for _, e := range records {
+			if e.WorkloadID != c.Selection.DefaultWorkloadID || e.Kind != "local_benchmark" || e.State != "passed" {
+				continue
+			}
+			var measurement struct {
+				Metric string   `json:"metric"`
+				Value  *float64 `json:"value"`
+			}
+			if err := json.Unmarshal(e.Measurement, &measurement); err != nil ||
+				measurement.Metric != c.Selection.Metric || measurement.Value == nil || *measurement.Value <= 0 {
+				continue
+			}
+			for _, recipe := range c.Recipes {
+				for _, id := range recipe.BenchmarkIDs {
+					found = found || id == e.ID
+				}
+			}
+		}
+		if !found {
+			return fmt.Errorf("default workload %q needs a referenced passed local benchmark for the selection metric", c.Selection.DefaultWorkloadID)
+		}
 	}
 	ids := make(map[string]bool)
 	for _, r := range c.Recipes {

@@ -26,11 +26,14 @@
       "required": ["policy", "metric", "required_checks", "comparable_fields", "fallback_policy"],
       "properties": {
         "policy": { "const": "fastest_validated" },
+        "default_workload_id": { "$ref": "#/$defs/id" },
+        "default_workload_label": { "type": "string", "minLength": 1, "maxLength": 80 },
         "metric": { "enum": ["decode_tokens_per_second", "request_tokens_per_second", "first_visible_content_seconds", "request_seconds"] },
         "required_checks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/checkName" } },
         "comparable_fields": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
         "fallback_policy": { "const": "visible_reason_required" }
-      }
+      },
+      "dependentRequired": { "default_workload_label": ["default_workload_id"] }
     },
     "recipes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/recipe" } },
     "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } }

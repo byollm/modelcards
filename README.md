@@ -47,6 +47,15 @@ packs remain the authority for downloading and launching executable code.
 Never execute a card's unsigned `launch.argv`. Do not replace the helper's actual
 runtime settings or capability results with card metadata.
 
+`selection.default_workload_id` can declare one representative local benchmark
+for a GUI recommendation. It must reference a passed local result for the selected
+metric. `default_workload_label` gives it a short display name. The recommendation
+means fastest tested for that workload on this Mac; it does not predict every
+future prompt. If the workload is missing or unknown, show a fallback reason.
+An API short-prompt result cannot be ranked against a standalone 512-token worker
+window. Future API candidates must use the same prepared short or long request,
+cache and sampling settings, and measurement method as the API baseline.
+
 ## Schema
 
 [model-card.schema.json](schemas/model-card.schema.json) uses JSON Schema 2020-12.

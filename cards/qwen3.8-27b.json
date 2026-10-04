@@ -41,7 +41,9 @@
       "measurement.cache_policy",
       "measurement.includes_reasoning"
     ],
-    "fallback_policy": "visible_reason_required"
+    "fallback_policy": "visible_reason_required",
+    "default_workload_id": "qwen38-fixed-short-128",
+    "default_workload_label": "Short prompt, 128-token cap"
   },
   "recipes": [
     {
