@@ -450,23 +450,23 @@
       "id": "qwen38-yukon-ranked-mtp-0863b06",
       "kind": "upstream_benchmark",
       "state": "passed",
-      "scope": "Yukon paired decode-only native-MTP benchmark; exact-greedy parity on the ranked eight-prompt set",
+      "scope": "Yukon benchmark mode named qwen-mtp-paired-decode-only; charged 512-token window includes seed prefill; exact-greedy parity on its ranked eight-prompt set",
       "recorded_at": "2026-08-30T00:00:01Z",
       "source_url": "https://www.yukon.org/api/benchmarks/5d1ee4d7-80bd-4555-b182-6505f26ef495",
       "workload_id": "qwen3.8-27b-mtp-v1-eight-hidden-prompts",
       "measurement": {
         "metric": "serial_relative_speedup",
-        "method": "median of eight per-prompt paired serial seconds/token divided by candidate seconds/token; depth-zero serial control",
+        "method": "Median of eight per-prompt ratios of original pinned-baseline serial charged seconds/token to winning candidate charged seconds/token. Parent timing includes seed prefill within the 512-token window; model loading and input-independent warmup are excluded.",
         "aggregation": "median of per-prompt ratios; even-count mean of central values",
         "measured_runs": 8,
         "concurrency": 1,
         "sampling": "exact greedy",
-        "cache_policy": "paired fresh sessions in ranked harness; eight hidden prompts",
+        "cache_policy": "Paired fresh benchmark sessions. Original pinned-baseline serial worker and candidate use the organizer target; this is not a same-current-candidate depth-zero denominator.",
         "includes_reasoning": true,
         "completion_tokens": 512,
         "value": 3.7291100105909
       },
-      "notes": "Upstream result at commit 0863b06. This ratio is not tokens/second, and is not an M4 Max serving measurement. The benchmark record does not publish complete OS/hardware details. Local serving validation is absent."
+      "notes": "Official upstream result at commit 0863b06. The named decode-only benchmark mode charges seed prefill; this is not a pure steady-state decode metric. The 3.729 ratio uses the original pinned baseline, and differs from any local same-candidate depth-zero comparison. It is not tokens/second or an M4 Max serving measurement. Complete OS/hardware details are absent from the API record. Local serving validation is absent."
     },
     {
       "id": "qwen38-m4max-native-mtp-fixed-window-parity-20261004",

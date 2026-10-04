@@ -117,6 +117,12 @@ window continues beyond EOS. It is not an API stopping or output-limit test.
 Local serving, tools, cancellation, and GUI integration remain unvalidated for that
 recipe. It has no published Amesh runtime pack and is not the default.
 
+The upstream mode is named `qwen-mtp-paired-decode-only`, but its parent timing
+charges seed prefill within the 512-token window. Model loading and
+input-independent warmup are excluded. The official speedup compares the original
+pinned serial baseline worker with the winning candidate. It is not a pure
+steady-state decode rate or a same-current-candidate serial comparison.
+
 Repository data and documentation use [Apache-2.0](LICENSE). Each model, head,
 drafter, and engine keeps its own license. This repository's license does not
 relicense their weights or code.
