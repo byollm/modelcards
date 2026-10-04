@@ -3,7 +3,7 @@
   "schema_version": 1,
   "kind": "amesh.model-card-index",
   "authority": "display_only",
-  "generated_at": "2026-10-04T16:08:53Z",
+  "generated_at": "2026-10-04T16:48:29Z",
   "repository": "https://github.com/byollm/modelcards",
   "cards": [
     {
@@ -30,7 +30,7 @@
       "id": "qwen3.8-27b-abliterated",
       "name": "Qwen 3.8 27B Abliterated",
       "path": "cards/qwen3.8-27b-abliterated.json",
-      "sha256": "8b5f7b4eb8362168be7d510416c929c1cfa87e72356e1a65f1d1d212b838179c",
+      "sha256": "fd830d10e3a7e7d33b54920ce8973ecbd94edf825460c991b8324b1b2cead858",
       "model_type": "dense",
       "display": {
         "type_symbol": "square.stack.3d.up",
