@@ -155,6 +155,8 @@ type backendSpec struct {
 	product   string
 	format    string
 	argv      []string
+	// greedyOnly engines reject omitted or stochastic temperature.
+	greedyOnly bool
 }
 
 var hfBackends = map[string]backendSpec{
@@ -182,7 +184,7 @@ var defaultBackend = map[string]string{"mlx": "mlx-lm", "gguf": "llama.cpp", "sa
 func packBackend(executable string, speculative bool) (backendSpec, error) {
 	switch executable {
 	case "amesh-yukon-server":
-		spec := backendSpec{name: "mlx-swift", sourceURL: "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge", product: "amesh-yukon-native", format: "mlx"}
+		spec := backendSpec{name: "mlx-swift", sourceURL: "https://github.com/Layr-Labs/qwen-3.8-mtp-challenge", product: "amesh-yukon-native", format: "mlx", greedyOnly: true}
 		if speculative {
 			spec.name = "mlx-swift-native-mtp-api"
 		}
@@ -213,6 +215,7 @@ type analysis struct {
 	files          []cardFile
 	sampling       samplingDoc
 	samplingNote   string
+	generation     map[string]any
 	chat           string
 	tools          string
 	thinking       string
@@ -503,6 +506,7 @@ func (f *fetcher) analyze(ctx context.Context, s *snapshot) (*analysis, error) {
 	if err != nil {
 		return nil, err
 	}
+	a.generation = generation
 	a.sampling, a.samplingNote = samplingDefaults(generation)
 	template, err := f.chatTemplate(ctx, s, tokenizer)
 	if err != nil {
@@ -553,6 +557,22 @@ func firstString(config map[string]any, keys ...string) string {
 		}
 	}
 	return ""
+}
+
+// engineSampling applies a greedy-only engine contract and keeps the upstream
+// generation defaults as notes only.
+func engineSampling(product string, generation map[string]any) (samplingDoc, string) {
+	note := fmt.Sprintf("Sampling follows the %s engine contract: greedy with explicit temperature 0; omitted or stochastic temperature is rejected.", product)
+	var upstream []string
+	for _, key := range []string{"do_sample", "temperature", "top_p", "top_k", "min_p", "repetition_penalty", "presence_penalty"} {
+		if v, found := generation[key]; found && v != nil {
+			upstream = append(upstream, fmt.Sprintf("%s=%v", key, v))
+		}
+	}
+	if len(upstream) > 0 {
+		note += " Upstream generation_config.json sets " + strings.Join(upstream, ", ") + "; these are upstream defaults only."
+	}
+	return samplingDoc{Mode: "greedy", Temperature: 0, UnsupportedPolicy: "reject"}, note
 }
 
 func samplingDefaults(generation map[string]any) (samplingDoc, string) {

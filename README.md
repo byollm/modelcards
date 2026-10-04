@@ -130,10 +130,12 @@ Derived values are labeled in the recipe notes. Context is the advertised
 memory floor is weight bytes × 1.2, rounded up to the next unified-memory tier
 (8, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384 or 512 GiB). Sampling follows
 `generation_config.json`, or greedy temperature 0 when that file is absent.
+Yukon pack recipes follow the engine contract instead: greedy, temperature 0,
+unsupported settings rejected; upstream generation defaults go in the notes.
 Mixture-of-experts cards use the `circle.hexagongrid` type symbol. The engine
 `source_revision` is the engine's current default-branch commit unless
 `--engine-revision` names one. Other flags: `--id`, `--name`, `--root`,
-`--timeout`. Requests use HTTPS only, with bounded timeouts and sizes. An
+`--timeout`, and a repeatable `--note` appended to the recipe notes. Requests use HTTPS only, with bounded timeouts and sizes. An
 optional `HF_TOKEN` is sent only to Hugging Face and never logged.
 
 `amesh_profile_ids` maps a recipe to exact helper profiles. An empty list means no

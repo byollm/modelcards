@@ -36,12 +36,13 @@ type options struct {
 	engineRevision string
 	headSource     string
 	profileIDs     []string
+	notes          []string
 	force          bool
 }
 
 func main() {
 	var opts options
-	var profiles stringList
+	var profiles, notes stringList
 	flags := flag.NewFlagSet("new-card", flag.ExitOnError)
 	flags.Usage = func() {
 		fmt.Fprintln(flags.Output(), "usage: go run ./cmd/new-card <huggingface-url | runtime-pack.json | https://…runtime-pack.json> [flags]")
@@ -54,6 +55,7 @@ func main() {
 	flags.StringVar(&opts.backend, "backend", "", "Hugging Face sources only: mlx-lm, llama.cpp, vllm or transformers (default by format)")
 	flags.StringVar(&opts.engineRevision, "engine-revision", "", "engine source commit (default: the engine repository's current default-branch commit)")
 	flags.StringVar(&opts.headSource, "head-source", "", "Hugging Face URL that holds a runtime pack's local_file MTP head")
+	flags.Var(&notes, "note", "sentence to append to the recipe notes; repeatable")
 	flags.BoolVar(&opts.force, "force", false, "overwrite an existing card")
 	timeout := flags.Duration("timeout", 5*time.Minute, "overall network deadline")
 	// Accept the source before or after flags.
@@ -69,6 +71,7 @@ func main() {
 		os.Exit(2)
 	}
 	opts.profileIDs = profiles
+	opts.notes = notes
 	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
 	defer cancel()
 	f := &fetcher{
@@ -235,8 +238,12 @@ func run(ctx context.Context, f *fetcher, opts options, now time.Time, out io.Wr
 		notes = append(notes, warning)
 		fmt.Fprintln(out, "warning:", warning)
 	}
+	if spec.greedyOnly {
+		a.sampling, a.samplingNote = engineSampling(spec.product, a.generation)
+	}
 	notes = append(notes, a.samplingNote)
 	notes = append(notes, upstreamNotes(s.info)...)
+	notes = append(notes, opts.notes...)
 	recipe.Notes = strings.Join(notes, " ")
 	recipe.Launch.Protocol = "openai_chat_completions"
 	recipe.Launch.Availability = "comparison_only"

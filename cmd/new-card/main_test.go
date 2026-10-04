@@ -496,7 +496,8 @@ func TestRuntimePackCard(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "--head-source") {
 		t.Fatalf("local head without a source: err = %v", err)
 	}
-	if err := h.run(options{source: packPath, engineRevision: engineHead, headSource: "https://huggingface.co/org/mtp-head"}); err != nil {
+	if err := h.run(options{source: packPath, engineRevision: engineHead, headSource: "https://huggingface.co/org/mtp-head",
+		notes: []string{"Operator note."}}); err != nil {
 		t.Fatal(err)
 	}
 	entries := checkRoot(t, h.root)
@@ -538,6 +539,14 @@ func TestRuntimePackCard(t *testing.T) {
 		if got := field(recipe, strings.Split(key, ".")...); got != want {
 			t.Errorf("recipe %s = %v; want %v", key, got, want)
 		}
+	}
+	sampling := field(recipe, "sampling").(map[string]any)
+	if len(sampling) != 3 || sampling["mode"] != "greedy" || sampling["temperature"] != float64(0) || sampling["unsupported_policy"] != "reject" {
+		t.Errorf("Yukon pack sampling = %v; want the greedy temperature-0 engine contract", sampling)
+	}
+	if notes := field(recipe, "notes").(string); !strings.Contains(notes, "do_sample=true, temperature=0.6, top_p=0.95, top_k=20; these are upstream defaults only.") ||
+		!strings.HasSuffix(notes, " Operator note.") {
+		t.Errorf("notes lack upstream sampling defaults or the operator note: %s", notes)
 	}
 	if field(recipe, "launch", "runtime_pack") != nil {
 		t.Error("an unsigned pack was linked as a runtime pack")
