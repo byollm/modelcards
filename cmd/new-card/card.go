@@ -32,7 +32,9 @@ type artifactDoc struct {
 	Quantization string         `json:"quantization"`
 	Files        []cardFile     `json:"files,omitempty"`
 	TreeDigest   *treeDigestDoc `json:"tree_digest,omitempty"`
-	Notes        string         `json:"notes,omitempty"`
+	// ManifestSHA256 hashes the manifest file itself, not the weights tree.
+	ManifestSHA256 string `json:"manifest_sha256,omitempty"`
+	Notes          string `json:"notes,omitempty"`
 }
 
 type engineDoc struct {

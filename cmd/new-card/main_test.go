@@ -634,3 +634,55 @@ func TestRejectsUntrustedSources(t *testing.T) {
 		t.Errorf("blob ref = %+v, %v", ref, err)
 	}
 }
+
+func TestSignedPackLinksRuntimePackAndTargetManifest(t *testing.T) {
+	const manifestHash = "2a8ae437e720504d5d27d8bf2c5bba29801002383c618a1dadb92befcac1b224"
+	h := newHarness(t)
+	packPath := writePack(t, t.TempDir(), func(pack map[string]any) {
+		pack["revision"] = 2
+		runtime := pack["runtime"].(map[string]any)
+		runtime["args"] = append(runtime["args"].([]string), "--target-manifest", "{artifact.target_manifest}")
+		pack["artifacts"] = append(pack["artifacts"].([]map[string]any), map[string]any{
+			"name": "target_manifest", "kind": "local_file", "sha256": manifestHash,
+			"path": "/Users/operator/.amesh/rt/manifests/" + manifestHash + "/target-manifest.json",
+		})
+		pack["signature"] = map[string]any{
+			"alg": "ed25519", "canonical_version": "JCS-v1", "purpose": "model-runtime-pack",
+			"signer_fingerprint": "sha256:" + strings.Repeat("a", 64),
+			"public_key_b64":     strings.Repeat("A", 43) + "=", "value": strings.Repeat("B", 86) + "==",
+		}
+	})
+	packBytes, err := os.ReadFile(packPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packHash := sha256.Sum256(packBytes)
+	if err := h.run(options{source: packPath, engineRevision: engineHead, headSource: "https://huggingface.co/org/mtp-head"}); err != nil {
+		t.Fatal(err)
+	}
+	checkRoot(t, h.root)
+	card, data := readCard(t, h.root, "model-mlx")
+	if bytes.Contains(data, []byte("/Users/")) {
+		t.Error("card leaks a local pack path")
+	}
+	recipe := field(card, "recipes", "0")
+	checks := map[string]any{
+		"launch.runtime_pack.pack_id":    "yukon-native-model-mtp-20261004",
+		"launch.runtime_pack.revision":   float64(2),
+		"launch.runtime_pack.sha256":     hex.EncodeToString(packHash[:]),
+		"launch.runtime_pack.expires_at": "2026-11-03T15:00:00Z",
+		"launch.argv.11":                 "--target-manifest",
+		"launch.argv.12":                 "{target_manifest_file}",
+		"target.manifest_sha256":         manifestHash,
+	}
+	for key, want := range checks {
+		if got := field(recipe, strings.Split(key, ".")...); got != want {
+			t.Errorf("recipe %s = %v; want %v", key, got, want)
+		}
+	}
+	notes := field(recipe, "notes").(string)
+	if !strings.Contains(notes, "The engine pins this checkpoint by target manifest SHA-256 "+manifestHash) ||
+		strings.Contains(notes, "unsigned") {
+		t.Errorf("notes = %s", notes)
+	}
+}

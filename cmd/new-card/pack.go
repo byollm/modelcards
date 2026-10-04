@@ -73,6 +73,8 @@ type packSource struct {
 	weights    packArtifact
 	head       *packArtifact
 	mtpDepth   int
+	// targetManifest is the local file the engine verifies the weights against.
+	targetManifest *packArtifact
 }
 
 func readPack(ctx context.Context, f *fetcher, source string) ([]byte, error) {
@@ -181,6 +183,18 @@ func parsePack(data []byte) (*packSource, error) {
 			return nil, fmt.Errorf("runtime pack: --mtp-max-depth must be between 1 and 64")
 		}
 	}
+	if value, found := argValue("--target-manifest"); found {
+		m := artifactRef.FindStringSubmatch(value)
+		if m == nil {
+			return nil, fmt.Errorf("runtime pack: --target-manifest must name a pinned artifact")
+		}
+		manifest, found := artifacts[m[1]]
+		manifest.SHA256 = strings.ToLower(manifest.SHA256)
+		if !found || manifest.Kind != "local_file" || !sha256Pattern.MatchString(manifest.SHA256) {
+			return nil, fmt.Errorf("runtime pack: --target-manifest must name a local_file artifact with a sha256")
+		}
+		src.targetManifest = &manifest
+	}
 	return src, nil
 }
 
@@ -195,6 +209,8 @@ func (src *packSource) launchArgv(targetPlaceholder string) []string {
 			arg = "{head_file}"
 		case src.head != nil && arg == "{artifact."+src.head.Name+"}":
 			arg = "{head_directory}"
+		case src.targetManifest != nil && arg == "{artifact."+src.targetManifest.Name+"}":
+			arg = "{target_manifest_file}"
 		}
 		argv = append(argv, arg)
 	}

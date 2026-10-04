@@ -216,6 +216,10 @@ func run(ctx context.Context, f *fetcher, opts options, now time.Time, out io.Wr
 		} else {
 			notes = append(notes, "The source pack is unsigned, so no runtime_pack is linked.")
 		}
+		if m := pack.targetManifest; m != nil {
+			recipe.Target.ManifestSHA256 = m.SHA256
+			notes = append(notes, fmt.Sprintf("The engine pins this checkpoint by target manifest SHA-256 %s, passed as --target-manifest. This generator did not compare that manifest with target.files.", m.SHA256))
+		}
 		if pack.head != nil {
 			head, err := f.resolveHead(ctx, pack.head, opts.headSource)
 			if err != nil {
