@@ -64,6 +64,50 @@ type recipe struct {
 		MaxEffective int       `json:"max_effective_draft_tokens"`
 		BlockTokens  int       `json:"block_tokens"`
 	} `json:"speculation"`
+	QueryGuidance *queryGuidance `json:"query_guidance"`
+}
+
+type queryGuidance struct {
+	SamplingModes []struct {
+		Mode        string   `json:"mode"`
+		Temperature *float64 `json:"temperature"`
+		TopP        *float64 `json:"top_p"`
+		TopK        *int     `json:"top_k"`
+		MinP        *float64 `json:"min_p"`
+	} `json:"sampling_modes"`
+	SamplingLocked *struct {
+		Locked bool   `json:"locked"`
+		Reason string `json:"reason"`
+	} `json:"sampling_locked"`
+	ReasoningEffort *struct {
+		Supported bool     `json:"supported"`
+		Levels    []string `json:"levels"`
+	} `json:"reasoning_effort"`
+	Thinking *struct {
+		Mode         string `json:"mode"`
+		DisableError string `json:"disable_error"`
+	} `json:"thinking"`
+	Warnings []struct {
+		Kind    string `json:"kind"`
+		Message string `json:"message"`
+	} `json:"warnings"`
+	PromptLayout *struct {
+		StablePrefixFirst      *bool  `json:"stable_prefix_first"`
+		DynamicContentPosition string `json:"dynamic_content_position"`
+	} `json:"prompt_layout"`
+	SpeculationGuidance *struct {
+		Recommendation          string    `json:"recommendation"`
+		CrossoverConcurrency    int       `json:"crossover_concurrency"`
+		CrossoverBasis          string    `json:"crossover_basis"`
+		ExpectedAcceptanceRates []float64 `json:"expected_acceptance_rates"`
+		AcceptanceBasis         string    `json:"acceptance_basis"`
+		RecommendedDepth        struct {
+			Min     *int   `json:"min"`
+			Max     *int   `json:"max"`
+			Policy  string `json:"policy"`
+			Scalar  *int   `json:"-"`
+		} `json:"recommended_depth"`
+	} `json:"speculation_guidance"`
 }
 
 type evidence struct {
@@ -240,6 +284,92 @@ func verifyPromptTokenCounts(raw json.RawMessage) error {
 	return nil
 }
 
+// verifyQueryGuidance enforces the cross-field rules that JSON Schema cannot
+// express: non-increasing acceptance rates, depth/rate length agreement,
+// crossover basis presence, and sampling-lock consistency.
+func verifyQueryGuidance(recipeID string, q *queryGuidance) error {
+	if q == nil {
+		return nil
+	}
+	seenModes := make(map[string]bool)
+	for i, m := range q.SamplingModes {
+		if m.Mode == "" {
+			return fmt.Errorf("recipe %s sampling mode %d needs a mode name", recipeID, i)
+		}
+		if seenModes[m.Mode] {
+			return fmt.Errorf("recipe %s repeats sampling mode %q", recipeID, m.Mode)
+		}
+		seenModes[m.Mode] = true
+	}
+	if q.SamplingLocked != nil {
+		if !q.SamplingLocked.Locked {
+			return fmt.Errorf("recipe %s sampling_locked must be true or absent", recipeID)
+		}
+		if q.SamplingLocked.Reason == "" {
+			return fmt.Errorf("recipe %s sampling_locked needs a reason", recipeID)
+		}
+	}
+	if q.ReasoningEffort != nil && q.ReasoningEffort.Supported && len(q.ReasoningEffort.Levels) == 0 {
+		return fmt.Errorf("recipe %s reasoning_effort needs levels when supported", recipeID)
+	}
+	if q.Thinking != nil && q.Thinking.Mode == "forced" && q.Thinking.DisableError == "" {
+		return fmt.Errorf("recipe %s thinking mode forced needs disable_error", recipeID)
+	}
+	for _, w := range q.Warnings {
+		switch w.Kind {
+		case "degradation_mode", "preference":
+		default:
+			return fmt.Errorf("recipe %s warning has unknown kind %q", recipeID, w.Kind)
+		}
+		if w.Message == "" {
+			return fmt.Errorf("recipe %s warning needs a message", recipeID)
+		}
+	}
+	if q.PromptLayout != nil && q.PromptLayout.StablePrefixFirst != nil &&
+		*q.PromptLayout.StablePrefixFirst && q.PromptLayout.DynamicContentPosition == "start" {
+		return fmt.Errorf("recipe %s prompt_layout puts dynamic content first, defeating prefix caching", recipeID)
+	}
+	sg := q.SpeculationGuidance
+	if sg == nil {
+		return nil
+	}
+	switch sg.Recommendation {
+	case "enable", "disable", "measure_first":
+	default:
+		return fmt.Errorf("recipe %s speculation guidance has unknown recommendation %q", recipeID, sg.Recommendation)
+	}
+	if sg.CrossoverConcurrency > 0 && sg.CrossoverBasis == "" {
+		return fmt.Errorf("recipe %s crossover concurrency needs a crossover basis", recipeID)
+	}
+	rates := sg.ExpectedAcceptanceRates
+	for i := 1; i < len(rates); i++ {
+		if rates[i] > rates[i-1] {
+			return fmt.Errorf("recipe %s expected acceptance rates must be non-increasing", recipeID)
+		}
+	}
+	if len(rates) > 0 && sg.AcceptanceBasis == "" {
+		return fmt.Errorf("recipe %s acceptance rates need an acceptance basis", recipeID)
+	}
+	d := sg.RecommendedDepth
+	if d.Min != nil || d.Max != nil || d.Policy != "" {
+		if d.Min == nil || d.Max == nil || d.Policy == "" {
+			return fmt.Errorf("recipe %s recommended depth schedule needs min, max, and policy", recipeID)
+		}
+		if *d.Min > *d.Max {
+			return fmt.Errorf("recipe %s recommended depth min exceeds max", recipeID)
+		}
+		switch d.Policy {
+		case "fixed", "confidence_adaptive", "acceptance_trained":
+		default:
+			return fmt.Errorf("recipe %s recommended depth has unknown policy %q", recipeID, d.Policy)
+		}
+		if len(rates) > 0 && len(rates) != *d.Max {
+			return fmt.Errorf("recipe %s acceptance rates length must equal max depth", recipeID)
+		}
+	}
+	return nil
+}
+
 func verify(c card, profiles map[string]string) error {
 	recipeIDs := make(map[string]bool)
 	for _, r := range c.Recipes {
@@ -303,6 +433,9 @@ func verify(c card, profiles map[string]string) error {
 		}
 	}
 	for _, r := range c.Recipes {
+		if err := verifyQueryGuidance(r.ID, r.QueryGuidance); err != nil {
+			return err
+		}
 		comparisonOnly := r.Launch.Availability == "comparison_only"
 		if comparisonOnly && (r.Role != "candidate" || len(r.AmeshProfileIDs) != 0 || len(r.Launch.RuntimePack) != 0) {
 			return fmt.Errorf("comparison-only recipe %s must be an unmapped candidate without a runtime pack", r.ID)

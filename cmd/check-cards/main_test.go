@@ -257,3 +257,159 @@ func TestMeasuredPromptCountsRejectNoncanonicalMeasurementKeys(t *testing.T) {
 		})
 	}
 }
+
+
+func TestQueryGuidanceAcceptsValidBlock(t *testing.T) {
+	c := publishedCard(t, "qwen3.8-27b.json")
+	c.Recipes[0].QueryGuidance = validGuidance()
+	if err := verify(c, make(map[string]string)); err != nil {
+		t.Fatalf("valid query guidance rejected: %v", err)
+	}
+}
+
+func validGuidance() *queryGuidance {
+	yes := true
+	q := &queryGuidance{
+		SamplingModes: []struct {
+			Mode        string   `json:"mode"`
+			Temperature *float64 `json:"temperature"`
+			TopP        *float64 `json:"top_p"`
+			TopK        *int     `json:"top_k"`
+			MinP        *float64 `json:"min_p"`
+		}{{Mode: "thinking"}, {Mode: "non_thinking"}},
+		SamplingLocked: &struct {
+			Locked bool   `json:"locked"`
+			Reason string `json:"reason"`
+		}{Locked: true, Reason: "thinking forced on; sampling knobs are not settable"},
+		ReasoningEffort: &struct {
+			Supported bool     `json:"supported"`
+			Levels    []string `json:"levels"`
+		}{Supported: true, Levels: []string{"low", "medium", "high"}},
+		Thinking: &struct {
+			Mode         string `json:"mode"`
+			DisableError string `json:"disable_error"`
+		}{Mode: "forced", DisableError: "thinking cannot be disabled on this model"},
+		Warnings: []struct {
+			Kind    string `json:"kind"`
+			Message string `json:"message"`
+		}{{Kind: "degradation_mode", Message: "greedy decoding in thinking mode causes repetition loops"}},
+		PromptLayout: &struct {
+			StablePrefixFirst      *bool  `json:"stable_prefix_first"`
+			DynamicContentPosition string `json:"dynamic_content_position"`
+		}{StablePrefixFirst: &yes, DynamicContentPosition: "end"},
+		SpeculationGuidance: &struct {
+			Recommendation          string    `json:"recommendation"`
+			CrossoverConcurrency    int       `json:"crossover_concurrency"`
+			CrossoverBasis          string    `json:"crossover_basis"`
+			ExpectedAcceptanceRates []float64 `json:"expected_acceptance_rates"`
+			AcceptanceBasis         string    `json:"acceptance_basis"`
+			RecommendedDepth        struct {
+				Min     *int   `json:"min"`
+				Max     *int   `json:"max"`
+				Policy  string `json:"policy"`
+				Scalar  *int   `json:"-"`
+			} `json:"recommended_depth"`
+		}{
+			Recommendation:          "measure_first",
+			CrossoverConcurrency:    4,
+			CrossoverBasis:          "estimated",
+			ExpectedAcceptanceRates: []float64{0.73, 0.48, 0.32},
+			AcceptanceBasis:         "measured",
+		},
+	}
+	q.SpeculationGuidance.RecommendedDepth.Min = intPtr(1)
+	q.SpeculationGuidance.RecommendedDepth.Max = intPtr(3)
+	q.SpeculationGuidance.RecommendedDepth.Policy = "confidence_adaptive"
+	return q
+}
+
+func intPtr(v int) *int { return &v }
+
+func TestQueryGuidanceRejectsInvalidBlocks(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		mut  func(*queryGuidance)
+		want string
+	}{
+		{"increasing-acceptance-rates", func(q *queryGuidance) {
+			q.SpeculationGuidance.ExpectedAcceptanceRates = []float64{0.4, 0.9}
+			q.SpeculationGuidance.AcceptanceBasis = "measured"
+			q.SpeculationGuidance.RecommendedDepth.Max = intPtr(2)
+		}, "non-increasing"},
+		{"crossover-without-basis", func(q *queryGuidance) {
+			q.SpeculationGuidance.CrossoverConcurrency = 8
+			q.SpeculationGuidance.CrossoverBasis = ""
+		}, "crossover basis"},
+		{"rates-without-basis", func(q *queryGuidance) {
+			q.SpeculationGuidance.AcceptanceBasis = ""
+		}, "acceptance basis"},
+		{"depth-rates-length-mismatch", func(q *queryGuidance) {
+			q.SpeculationGuidance.ExpectedAcceptanceRates = []float64{0.7, 0.5, 0.3, 0.2}
+			q.SpeculationGuidance.AcceptanceBasis = "measured"
+			q.SpeculationGuidance.RecommendedDepth.Max = intPtr(3)
+		}, "equal max depth"},
+		{"depth-min-exceeds-max", func(q *queryGuidance) {
+			q.SpeculationGuidance.RecommendedDepth.Min = intPtr(5)
+			q.SpeculationGuidance.RecommendedDepth.Max = intPtr(3)
+		}, "min exceeds max"},
+		{"depth-partial-schedule", func(q *queryGuidance) {
+			q.SpeculationGuidance.RecommendedDepth.Max = nil
+			q.SpeculationGuidance.RecommendedDepth.Policy = ""
+		}, "min, max, and policy"},
+		{"unknown-depth-policy", func(q *queryGuidance) {
+			q.SpeculationGuidance.RecommendedDepth.Min = intPtr(1)
+			q.SpeculationGuidance.RecommendedDepth.Max = intPtr(3)
+			q.SpeculationGuidance.RecommendedDepth.Policy = "sometimes"
+		}, "unknown policy"},
+		{"unlocked-sampling-lock", func(q *queryGuidance) {
+			q.SamplingLocked = &struct {
+				Locked bool   `json:"locked"`
+				Reason string `json:"reason"`
+			}{Locked: false, Reason: "x"}
+		}, "must be true or absent"},
+		{"lock-without-reason", func(q *queryGuidance) {
+			q.SamplingLocked = &struct {
+				Locked bool   `json:"locked"`
+				Reason string `json:"reason"`
+			}{Locked: true}
+		}, "needs a reason"},
+		{"effort-without-levels", func(q *queryGuidance) {
+			q.ReasoningEffort = &struct {
+				Supported bool     `json:"supported"`
+				Levels    []string `json:"levels"`
+			}{Supported: true}
+		}, "needs levels"},
+		{"forced-thinking-without-error", func(q *queryGuidance) {
+			q.Thinking = &struct {
+				Mode         string `json:"mode"`
+				DisableError string `json:"disable_error"`
+			}{Mode: "forced"}
+		}, "disable_error"},
+		{"unknown-warning-kind", func(q *queryGuidance) {
+			q.Warnings = []struct {
+				Kind    string `json:"kind"`
+				Message string `json:"message"`
+			}{{Kind: "suggestion", Message: "x"}}
+		}, "unknown kind"},
+		{"dynamic-content-first", func(q *queryGuidance) {
+			q.PromptLayout.DynamicContentPosition = "start"
+		}, "defeating prefix caching"},
+		{"duplicate-sampling-mode", func(q *queryGuidance) {
+			q.SamplingModes = append(q.SamplingModes, q.SamplingModes[0])
+		}, "repeats sampling mode"},
+		{"unknown-recommendation", func(q *queryGuidance) {
+			q.SpeculationGuidance.Recommendation = "maybe"
+		}, "unknown recommendation"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			c := publishedCard(t, "qwen3.8-27b.json")
+			q := validGuidance()
+			test.mut(q)
+			c.Recipes[0].QueryGuidance = q
+			err := verify(c, make(map[string]string))
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected error containing %q, got %v", test.want, err)
+			}
+		})
+	}
+}
