@@ -263,6 +263,7 @@
           "additionalProperties": { "$ref": "#/$defs/check" }
         },
         "launch": { "$ref": "#/$defs/launch" },
+        "query_guidance": { "$ref": "#/$defs/queryGuidance" },
         "benchmark_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
         "notes": { "type": "string" }
       },
@@ -291,6 +292,106 @@
           }
         }
       ]
+    },
+    "queryGuidance": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "sampling_modes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/samplingMode" } },
+        "sampling_locked": {
+          "type": "object", "additionalProperties": false,
+          "required": ["locked", "reason"],
+          "properties": {
+            "locked": { "const": true },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        "reasoning_effort": {
+          "type": "object", "additionalProperties": false,
+          "required": ["supported", "levels"],
+          "properties": {
+            "supported": { "type": "boolean" },
+            "levels": { "type": "array", "uniqueItems": true, "items": { "enum": ["low", "medium", "high"] } },
+            "task_routing": {
+              "type": "object", "additionalProperties": { "type": "string", "minLength": 1 },
+              "propertyNames": { "enum": ["low", "medium", "high"] }
+            },
+            "source_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "thinking": {
+          "type": "object", "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {
+            "mode": { "enum": ["disabled", "optional", "forced"] },
+            "disable_error": { "type": "string", "minLength": 1 },
+            "source_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/queryWarning" } },
+        "prompt_layout": {
+          "type": "object", "additionalProperties": false,
+          "required": ["stable_prefix_first"],
+          "properties": {
+            "stable_prefix_first": { "type": "boolean" },
+            "dynamic_content_position": { "enum": ["end", "start"] },
+            "notes": { "type": "string" }
+          }
+        },
+        "speculation_guidance": { "$ref": "#/$defs/speculationGuidance" },
+        "source_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "samplingMode": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": { "type": "string", "minLength": 1 },
+        "temperature": { "type": "number", "minimum": 0 },
+        "top_p": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "top_k": { "type": "integer", "minimum": 1 },
+        "min_p": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "tuning_hint": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "queryWarning": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "message"],
+      "properties": {
+        "kind": { "enum": ["degradation_mode", "preference"] },
+        "message": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "speculationGuidance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["recommendation"],
+      "properties": {
+        "recommendation": { "enum": ["enable", "disable", "measure_first"] },
+        "crossover_concurrency": { "type": "integer", "minimum": 1 },
+        "crossover_basis": { "enum": ["measured", "estimated"] },
+        "expected_acceptance_rates": {
+          "type": "array", "minItems": 1, "maxItems": 64,
+          "items": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+          "description": "Per-position acceptance rates, non-increasing, length equals depth."
+        },
+        "acceptance_basis": { "enum": ["measured", "upstream_reported"] },
+        "recommended_depth": {
+          "oneOf": [
+            { "type": "integer", "minimum": 1, "maximum": 64 },
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["min", "max", "policy"],
+              "properties": {
+                "min": { "type": "integer", "minimum": 1, "maximum": 64 },
+                "max": { "type": "integer", "minimum": 1, "maximum": 64 },
+                "policy": { "enum": ["fixed", "confidence_adaptive", "acceptance_trained"] }
+              }
+            }
+          ]
+        },
+        "notes": { "type": "string" }
+      }
     },
     "evidence": {
       "type": "object", "additionalProperties": false,
