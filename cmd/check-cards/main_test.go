@@ -258,7 +258,6 @@ func TestMeasuredPromptCountsRejectNoncanonicalMeasurementKeys(t *testing.T) {
 	}
 }
 
-
 func TestQueryGuidanceAcceptsValidBlock(t *testing.T) {
 	c := publishedCard(t, "qwen3.8-27b.json")
 	c.Recipes[0].QueryGuidance = validGuidance()
@@ -298,17 +297,12 @@ func validGuidance() *queryGuidance {
 			DynamicContentPosition string `json:"dynamic_content_position"`
 		}{StablePrefixFirst: &yes, DynamicContentPosition: "end"},
 		SpeculationGuidance: &struct {
-			Recommendation          string    `json:"recommendation"`
-			CrossoverConcurrency    int       `json:"crossover_concurrency"`
-			CrossoverBasis          string    `json:"crossover_basis"`
-			ExpectedAcceptanceRates []float64 `json:"expected_acceptance_rates"`
-			AcceptanceBasis         string    `json:"acceptance_basis"`
-			RecommendedDepth        struct {
-				Min     *int   `json:"min"`
-				Max     *int   `json:"max"`
-				Policy  string `json:"policy"`
-				Scalar  *int   `json:"-"`
-			} `json:"recommended_depth"`
+			Recommendation          string           `json:"recommendation"`
+			CrossoverConcurrency    int              `json:"crossover_concurrency"`
+			CrossoverBasis          string           `json:"crossover_basis"`
+			ExpectedAcceptanceRates []float64        `json:"expected_acceptance_rates"`
+			AcceptanceBasis         string           `json:"acceptance_basis"`
+			RecommendedDepth        recommendedDepth `json:"recommended_depth"`
 		}{
 			Recommendation:          "measure_first",
 			CrossoverConcurrency:    4,
@@ -411,5 +405,25 @@ func TestQueryGuidanceRejectsInvalidBlocks(t *testing.T) {
 				t.Fatalf("expected error containing %q, got %v", test.want, err)
 			}
 		})
+	}
+}
+
+// A scalar recommended_depth (a fixed depth) must decode and validate, and must
+// agree with the acceptance-rates length.
+func TestQueryGuidanceScalarRecommendedDepth(t *testing.T) {
+	c := publishedCard(t, "qwen3.8-27b.json")
+	q := validGuidance()
+	// Replace the object form with a scalar fixed depth of 2.
+	q.SpeculationGuidance.RecommendedDepth = recommendedDepth{Scalar: intPtr(2)}
+	q.SpeculationGuidance.ExpectedAcceptanceRates = []float64{0.7, 0.5}
+	c.Recipes[0].QueryGuidance = q
+	if err := verify(c, make(map[string]string)); err != nil {
+		t.Fatalf("scalar depth 2 with 2 rates should validate, got %v", err)
+	}
+	// A scalar depth that disagrees with the rates length must fail.
+	q.SpeculationGuidance.RecommendedDepth = recommendedDepth{Scalar: intPtr(3)}
+	if err := verify(c, make(map[string]string)); err == nil ||
+		!strings.Contains(err.Error(), "fixed depth") {
+		t.Fatalf("expected fixed-depth length mismatch, got %v", err)
 	}
 }

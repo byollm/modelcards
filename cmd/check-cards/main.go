@@ -96,18 +96,47 @@ type queryGuidance struct {
 		DynamicContentPosition string `json:"dynamic_content_position"`
 	} `json:"prompt_layout"`
 	SpeculationGuidance *struct {
-		Recommendation          string    `json:"recommendation"`
-		CrossoverConcurrency    int       `json:"crossover_concurrency"`
-		CrossoverBasis          string    `json:"crossover_basis"`
-		ExpectedAcceptanceRates []float64 `json:"expected_acceptance_rates"`
-		AcceptanceBasis         string    `json:"acceptance_basis"`
-		RecommendedDepth        struct {
-			Min     *int   `json:"min"`
-			Max     *int   `json:"max"`
-			Policy  string `json:"policy"`
-			Scalar  *int   `json:"-"`
-		} `json:"recommended_depth"`
+		Recommendation          string           `json:"recommendation"`
+		CrossoverConcurrency    int              `json:"crossover_concurrency"`
+		CrossoverBasis          string           `json:"crossover_basis"`
+		ExpectedAcceptanceRates []float64        `json:"expected_acceptance_rates"`
+		AcceptanceBasis         string           `json:"acceptance_basis"`
+		RecommendedDepth        recommendedDepth `json:"recommended_depth"`
 	} `json:"speculation_guidance"`
+}
+
+// recommendedDepth decodes the schema's oneOf: either a scalar int (a fixed
+// depth) or an object with min/max/policy. The scalar form is kept in Scalar;
+// the object form in Min/Max/Policy.
+type recommendedDepth struct {
+	Min    *int
+	Max    *int
+	Policy string
+	Scalar *int
+}
+
+func (d *recommendedDepth) UnmarshalJSON(b []byte) error {
+	if len(b) == 0 || string(b) == "null" {
+		return nil
+	}
+	if b[0] == '{' {
+		var obj struct {
+			Min    *int   `json:"min"`
+			Max    *int   `json:"max"`
+			Policy string `json:"policy"`
+		}
+		if err := json.Unmarshal(b, &obj); err != nil {
+			return err
+		}
+		d.Min, d.Max, d.Policy = obj.Min, obj.Max, obj.Policy
+		return nil
+	}
+	var n int
+	if err := json.Unmarshal(b, &n); err != nil {
+		return err
+	}
+	d.Scalar = &n
+	return nil
 }
 
 type evidence struct {
@@ -351,6 +380,16 @@ func verifyQueryGuidance(recipeID string, q *queryGuidance) error {
 		return fmt.Errorf("recipe %s acceptance rates need an acceptance basis", recipeID)
 	}
 	d := sg.RecommendedDepth
+	if d.Scalar != nil {
+		// A scalar depth is a fixed depth; it must agree with the rates length.
+		if *d.Scalar < 1 {
+			return fmt.Errorf("recipe %s recommended depth must be at least 1", recipeID)
+		}
+		if len(rates) > 0 && len(rates) != *d.Scalar {
+			return fmt.Errorf("recipe %s acceptance rates length must equal the fixed depth", recipeID)
+		}
+		return nil
+	}
 	if d.Min != nil || d.Max != nil || d.Policy != "" {
 		if d.Min == nil || d.Max == nil || d.Policy == "" {
 			return fmt.Errorf("recipe %s recommended depth schedule needs min, max, and policy", recipeID)
